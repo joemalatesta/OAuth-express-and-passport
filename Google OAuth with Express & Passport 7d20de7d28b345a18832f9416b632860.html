@@ -1,0 +1,839 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Google OAuth with Express &amp; Passport</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+}
+
+.simple-table-header {
+	background: rgb(247, 246, 243);
+	color: black;
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="7d20de7d-28b3-45a1-8832-f9416b632860" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Google_G_Logo.svg.png"/></div><h1 class="page-title">Google OAuth with Express &amp; Passport</h1></header><div class="page-body"><figure id="1b075910-a084-431a-b623-b100270e9b51" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/1_TL54n10lC9xjL-HYwHE6sQ.jpeg"><img style="width:576px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/1_TL54n10lC9xjL-HYwHE6sQ.jpeg"/></a></figure><h1 id="8a581a50-6dfc-49ad-9d4b-9fcdf54fc94d" class="">Contents</h1><nav id="aed83090-964e-4c59-8ce4-5c5e99c17646" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#8a581a50-6dfc-49ad-9d4b-9fcdf54fc94d">Contents</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#3df52fa5-b80c-4190-9ba0-94370957637e">Intro to Authentication</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#cb13344c-c4e8-4504-bfab-d1c0c09726e5">Why We Need Authentication</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#62b01e80-f377-47b5-abc9-0634fab690f8">What is Authentication?</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#d38ef528-47ff-49a4-bf3d-b8e00e52e867">Authentication vs. Authorization</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#6848785b-e9f8-4b22-a274-0043441d1c5a">Why OAuth?</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#4476956d-b693-44eb-bb7d-08abeb2761ed">Why not OAuth?</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1ef63bde-4c59-4157-8de7-08ab7aa248a4">What is OAuth?</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#d84203b3-1765-4be4-9bc7-12b491a39190">OAuth Vocabulary</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#a0906947-59f9-4a6a-af67-7f7e032b4959">What is it?</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#c2d7d60d-fa8b-4f87-97b4-8c0c9d13db83">OAuth 2’s Flow &amp; Scope</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#c742dc99-4d44-4ec6-9f31-c12fb898e007">Review Questions ❓</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#f1a63e5c-e41d-468e-ae79-222278ca1c72">Preview of the App We Will Build Today</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#5149fd4b-83af-41b2-a204-6152976b0136">The App’s User Stories</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#60a1e766-09a6-410c-b04b-3eb775b4fe6f">As a Visitor:</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#f747e85d-4218-4308-be2f-8dfc43010fd7">As an Authenticated Student:</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#88a07c1b-330d-4b73-9f9a-376afa4538c6">Review the Starter Code</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#8068a5ab-eeca-40c5-a651-9bef6f8f0ee0">.env file for “secrets”</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#a5bc71df-12df-4560-91ab-437717726173">Hosted MongoDB</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#5a05218d-ba92-4e42-8f47-4a6301b795ff">Search Form</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#df2dc0f5-3d87-46fb-9fb4-dca42d452a42">The View</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#79002f44-83a3-45c4-a1a3-7b436f573f4a">User Model</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#f296fa56-85be-4d53-9c9a-8848142e9eab">Student Model</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#bb47c7a0-6c33-411f-a1af-fea603a25b45">Routing</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#ea05777c-972b-4eb8-8b8d-f401b12243c3"><code>students</code> Controller</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#492e1459-c044-42d3-97ea-46f51a6b1c12"><mark class="highlight-orange"><code>bin/www.js</code></mark></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#3983830d-9806-4a6b-83da-f40984cf1f51">Ready for Some OAuth?</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#a003c1f9-6e10-4e5c-ae55-3e6eecb5fbe7">Today’s OAuth Game Plan</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#64190596-5627-48ff-b8f3-677b49f22d19">Step 1 - Register our App</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#46f67d63-fa2e-4889-a7db-8d1bd6a3c773">Step 1.1 - Google Developers Console</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#93bbc1f5-d290-4ee6-ac9a-9f10ec14e719">Step 1.2 - Create a Project</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#9917b90b-83c1-415d-ba6b-11bb03a1f632">Step 1.3 - Enable the People API</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#fb41b490-dc37-4c8f-8e66-f4f50143636e">Step 1.4 - Configure OAuth consent</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#796066a7-4c55-4717-854e-e00b2d49f745">Step 1.5 - Create credentials</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#933830e2-709f-48b8-a617-b61d442d11c5">Step 1.6 - Add the Client ID, Client Secret, and Callback URI to <mark class="highlight-orange"><code>.env</code></mark></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#8d05d897-9298-4fd3-970c-89584807449e">Congrats on Registering your App!</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#6076058e-d252-45bb-a225-f3f76e2ae1de">Step 2 - Passport Discussion</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#ee6f0f35-d0bc-442d-b39d-40472c39b71a">Step 3 - Session Middleware</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#e8595989-6c7d-4e86-a001-267599ab1c65">Step 3.1 - Installing Session Middleware</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#c07c9b7f-8cb1-491c-8e91-8be0525dd284">Step 3.2 - Configure and Mount Session Middleware</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#a0fe0617-4d7d-49b9-ac59-68e380636086">Step 3.3 - Uninstall <code>cookie-parser</code></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#afdbed94-01ff-45fb-afbb-656f6749dbb9">Review Questions ❓</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#25ab9459-dfab-4062-84a1-74f0a239d257">Step 4 - Install Passport</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#d87bc37e-d120-44fb-8f49-03a1ab05e1c5">Step 4.1 - Mount Passport</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0af82c5d-62d3-48fe-9bce-f946dcccaeb9">Step 5 - Create a Passport Config Module</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#3e336705-2a67-4356-b4bf-018f592755da">Step 5.1 - Passport Module’s Exports Code</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#9eae6eb4-3263-44ab-894b-6cca8fe36168">Step 5.2 - Import Passport</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#17462b9e-09fa-4eed-83eb-6ce8f6454785">Step 6 - Install the OAuth Strategy</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#79d1358d-9740-4666-93c0-73db3f911db7">Step 6.1 - Import the OAuth Strategy</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#81393c4a-fc96-4bfa-a040-07a418c70a52">Step 7 - Configuring Passport</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#e4d116ec-9438-4a09-99b3-f6bbf0b13a1a">Step 7.1 <code>passport.use</code></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#7b3e4b46-e027-45bc-8a57-8433baa1999f">Step 7.2 - The <code>Verify</code> Callback</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#25864848-5680-4c76-906e-93c889e9113f">Step 7.3 - Modify the <code>User</code> Model</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#7aaf7234-1e90-4c2e-bf87-5ad83ab04918">Step 7.4 - Callback Code</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#c86bb29c-ade6-4827-abb5-f532c4098a48">Step 7.5 <code>serializeUser</code> &amp; <code>deserializeUser</code> Methods</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#bc3a0b3b-0648-4e50-8b58-13560a957f31">Step 7.5.1 <code>serializeUser</code> Method</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#41faf160-a68c-4b93-aa69-d4d3bfea5fc3">Step 7.5.2 <code>deserializeUser</code> Method</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#bf654769-761e-47cd-bbee-54a8c27e3e3c">Step 8 - Define Routes for Authentication</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#aba145be-b390-4be4-8188-64cf1b46bd6e">Step 8.1 Create <mark class="highlight-orange"><code>routes/auth.js</code></mark></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#e21a1fe7-f705-4da4-9180-23da1e9b850e">Step 8.1 Update <mark class="highlight-orange"><code>server.js</code></mark></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#f5134761-fe7b-4d12-bce9-245b057cf306">Step 8.2 Coding the Routes and Controllers</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#c2938cf6-c779-4e35-9286-f20b16188c63">Step 8.3 Login Route</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#b86148a2-933e-43b0-921a-61ddedddb511">Step 8.4 Google Callback Route</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#2988408d-ff50-41b7-8b73-39f0e362c78b">Step 8.5 Logout Route</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b811fe8b-10b9-4867-894e-abee78a8c795">Step 9 - Add Login/Logout UI</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#e9aa84c2-0c88-43ef-8fdf-c3c2fb25e747">Step 9.1 Pass <code>req.user</code> to the View</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#bf12d9b3-52f8-474d-985d-3111ec543066">Step 9.2 Add the Login / Logout UI Logic</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#83cbd9b5-84ec-458b-9f68-cf11585d775f">Step 9.3 Try Logging In!</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#12c02120-22f4-43a0-8449-b9567c00988d">Step 9.4 - Verifying Session Middleware</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#7feeed62-9ceb-49af-8fe9-ca5bb7cb17fb">Step 10 - Code the First User Story</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#40537503-b759-496f-ac2c-c5124f25140c">Step 10.1 Add Dynamic UI</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#c6fa7fb2-f3e6-4a4d-8f4c-fa382f5e5429">Step 10.2 Controller Code</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#cb978b64-cd73-4be9-907e-4e97687e482e">Step 10.3 Test the First User Story</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#ccff6a19-7cc0-45d2-8b47-c9ab426b159f">Step 11 - Authorization</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#5bbf2add-4930-44ba-8362-f163b8a19029">Step 11.1 Authorization Middleware</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#701aa01a-7945-4894-81d2-e46e8479e89a">Step 11.2 Authorization Middleware</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#f6846aa0-ca7d-41b8-a565-5ce2ccb31e3c">Congrats on implementing OAuth authentication and authorization!</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#5d910299-78e9-40e2-8614-dc6a0271427c">Level Up 🚀</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#e90a38d6-5c8d-4f25-87e6-9fa345465aff">References 📖</a></div></nav><h1 id="3df52fa5-b80c-4190-9ba0-94370957637e" class="">Intro to Authentication</h1><h3 id="cb13344c-c4e8-4504-bfab-d1c0c09726e5" class="">Why We Need Authentication</h3><p id="29fff88f-9df8-4f56-9566-a5bf2dd04d23" class="">An application’s functionality usually revolves around a particular user.</p><p id="98aecf38-571d-408f-90f9-bb86199269cc" class="">For example, when we use online banking, or more importantly, save songs to our Spotify playlists, the application has to know who we are - and this is where <strong>authentication</strong> comes in.</p><h2 id="62b01e80-f377-47b5-abc9-0634fab690f8" class="">What is Authentication?</h2><p id="3f55be24-1318-4e87-946b-82d25c473555" class="">Authentication is what enables an application to know the <strong>identity</strong> of the person using it.</p><p id="c66c8f6f-13f2-42d8-8e4c-d35aec33d6ac" class="">In SEI, we’re going to learn three types of <strong>authentication</strong>:</p><ul id="d58fb5d2-067d-4776-8a04-014ad2077ac1" class="bulleted-list"><li style="list-style-type:disc"><strong>Unit 2</strong>: Logging in via a third-party provider - <em>OAuth</em></li></ul><ul id="cc84d1e7-f0eb-4f46-b6a2-d3f7c79c3766" class="bulleted-list"><li style="list-style-type:disc"><strong>Unit 3</strong>: Token-based username/password login</li></ul><ul id="d0d3c5e8-b2f4-40ee-bc79-ce67ea3020f4" class="bulleted-list"><li style="list-style-type:disc"><strong>Unit 4</strong>: Session-based username/password login</li></ul><h2 id="d38ef528-47ff-49a4-bf3d-b8e00e52e867" class="">Authentication vs. Authorization</h2><p id="7e2e03be-9498-49df-b7de-b65cc736cd35" class=""><em>Authentication</em> and <em>authorization</em> are not the same.</p><p id="c24f95eb-46bf-48a6-9a37-7c64189ee748" class=""><strong>Authentication</strong> verifies a user’s identity.</p><p id="f5679c1e-45e7-4115-8f3b-bf552656a546" class=""><strong>Authorization</strong> determines what functionality a given user can access. For example:</p><ul id="3ce56b92-9291-4112-b4a5-d4fdbb9cc55d" class="bulleted-list"><li style="list-style-type:disc">Features a logged in (authenticated) user has vs. an anonymous visitor
+- or -</li></ul><ul id="d5f3e414-62f9-4716-9be4-9d94623fedc1" class="bulleted-list"><li style="list-style-type:disc">Features an <em>admin</em> user has vs. some other user <em>role</em></li></ul><h1 id="6848785b-e9f8-4b22-a274-0043441d1c5a" class="">Why OAuth?</h1><p id="8a56e6b6-50fd-4b7e-9ee0-a544282ac4bf" class="">Consider applications where we have to sign up and log in using a username and a password.</p><ul id="b1717a48-53e3-4256-8f15-9a09171f3656" class="toggle"><li><details open=""><summary>❓ What are the pitfalls of username/password authentication from a user’s perspective?</summary><ul id="e88180e0-fa37-4f06-a48f-4e1a10913f36" class="bulleted-list"><li style="list-style-type:disc">Creating multiple logins requires users to remember and manage all of those login credentials.</li></ul><ul id="b3709733-ce18-4c88-ac01-36ff0b4c0aba" class="bulleted-list"><li style="list-style-type:disc">Users will often use the same credentials across various sites, so if there’s a security breach at one they are a member of, the hackers know that users often use the same credentials across all of their sites - oh snap!</li></ul><ul id="926b755b-5fc1-41c2-93dd-ccda3b40363e" class="bulleted-list"><li style="list-style-type:disc">Users typically use weak non-unique passwords so that they can remember all of them.</li></ul></details></li></ul><ul id="8d452af7-8907-438a-a4d1-657fc6e30eb7" class="toggle"><li><details open=""><summary>❓ What would be the pitfalls of username/password authentication from a web site business’s perspective?</summary><ul id="6b283ec4-3e7a-4846-9111-1b09eae4e20c" class="bulleted-list"><li style="list-style-type:disc">Managing users’ credentials requires carefully crafted security code written by highly-paid devs.</li></ul><ul id="f7092b36-2c4e-489e-92e2-8fc39a518d4b" class="bulleted-list"><li style="list-style-type:disc">Users (customers) are annoyed by having to create dedicated accounts, especially for entertainment or personal interest type websites.</li></ul><ul id="284c61c4-b36a-43f7-9a04-0fe4a3325c57" class="bulleted-list"><li style="list-style-type:disc">Managing credentials makes your business a target for attackers (internal and external), inviting liability.</li></ul></details></li></ul><h1 id="4476956d-b693-44eb-bb7d-08abeb2761ed" class="">Why not OAuth?</h1><ul id="e936fd56-3234-4e61-b291-6066c5322aab" class="toggle"><li><details open=""><summary>❓ What are the potential pitfalls of OAuth from a user’s perspective?</summary><ul id="8f6e570e-d4af-4098-a871-e3e760e9370b" class="bulleted-list"><li style="list-style-type:disc">By using an OAuth provider, a user is subject to an increasing amount of vendor lock-in to that OAuth provider.</li></ul><ul id="409cb987-d456-43e4-941b-f0cbfd285a27" class="bulleted-list"><li style="list-style-type:disc">An OAuth provider gets a significant amount of user data they may otherwise not have access to through the OAuth process.</li></ul><ul id="b7275e94-098f-464e-976a-166df0e47eb8" class="bulleted-list"><li style="list-style-type:disc">The support process can become more difficult.</li></ul></details></li></ul><ul id="70b0eb7a-8782-4f26-98a1-5f3b641b2455" class="toggle"><li><details open=""><summary>❓ What would be the pitfalls of OAuth authentication from a web site business’s perspective?</summary><ul id="e016f798-593b-4000-a68e-89b6491e4714" class="bulleted-list"><li style="list-style-type:disc">Using OAuth, a business is entering a relatively one-sided agreement with a company that is often many times larger than itself. This agreement locks a business into following guidelines such as <mark class="highlight-blue"><strong><a href="https://developers.google.com/identity/branding-guidelines">Google&#x27;s Sign-In Branding Guidelines</a></strong></mark>.</li></ul><ul id="d7db448c-dfb2-4952-872f-1615d472c5d8" class="bulleted-list"><li style="list-style-type:disc">Little to no data validation</li></ul><ul id="26260849-d015-4d3d-a242-649d35668869" class="bulleted-list"><li style="list-style-type:disc">Trading one headache - building a secure credential authentication and storage system (which the company is still likely to build in the end) - for another - building a complex login system to interact with third-party systems and data structures.</li></ul></details></li></ul><p id="30432e9d-8690-4f3c-b318-c8febb3935bf" class="">Despite these pitfalls, the bottom line is that many users prefer to use OAuth instead of creating another set of credentials to use your site. OAuth is hot, so let’s use it!</p><h1 id="1ef63bde-4c59-4157-8de7-08ab7aa248a4" class="">What is OAuth?</h1><h2 id="d84203b3-1765-4be4-9bc7-12b491a39190" class="">OAuth Vocabulary</h2><ul id="b99af5d7-c2e0-454c-8ba3-2a1984225156" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-blue"><a href="https://oauth.net/2/"><strong>OAuth 2.0</strong></a></mark>: The current OAuth standard. Version 1.0 is obsolete and should not be used.</li></ul><ul id="b9a7886c-5c48-4dae-9873-f17c6d79294c" class="bulleted-list"><li style="list-style-type:disc"><strong>OAuth provider</strong>: A service company such as <em>Google</em> makes its OAuth authentication service available to third-party applications.</li></ul><ul id="6a16e9fc-9748-4a44-9222-3a983c20a604" class="bulleted-list"><li style="list-style-type:disc"><strong>Client application</strong>: Our web application! Remember, this is from an <em>OAuth provider’s</em> perspective.</li></ul><ul id="b0092405-2599-482d-be00-e68ae77f51af" class="bulleted-list"><li style="list-style-type:disc"><strong>Owner</strong>: An OAuth user. They have an account with the OAuth provider, such as <em>Facebook</em>, <em>Google</em>, <em>Dropbox</em>, etc.</li></ul><ul id="85b63368-85db-47cb-b977-ccad4804eba5" class="bulleted-list"><li style="list-style-type:disc"><strong>Resources</strong>: An <em>owner’s</em> information on a service that <strong>may</strong> be exposed to <em>client applications</em>; for example, a user of Dropbox may allow access to their files.</li></ul><ul id="e5b2b207-43dd-4048-b25b-f6bb7630eff6" class="bulleted-list"><li style="list-style-type:disc"><strong>Access token</strong>: An temporary key that provides access to an <em>owner’s</em> <em>resources</em>.</li></ul><ul id="a43c503a-3744-4fc3-b670-b9f9ce0ecbe1" class="bulleted-list"><li style="list-style-type:disc"><strong>Scope</strong>: Determines what <em>resources</em> and rights (read-only, update, etc.) a particular <em>token</em> has.</li></ul><h2 id="a0906947-59f9-4a6a-af67-7f7e032b4959" class="">What is it?</h2><p id="8292d311-7c39-46a0-936f-393d6078e132" class="">OAuth is an open standard that provides <strong>client applications</strong> access to <strong>resources</strong> of a service such as Google with the permission of the resources’ <strong>owner</strong>.</p><p id="9be92425-198f-4b2c-b7ea-3f5593763193" class="">There are numerous OAuth Providers, including:</p><ul id="f0f5302a-4730-4373-b3f1-1c8d3531251f" class="bulleted-list"><li style="list-style-type:disc">Facebook</li></ul><ul id="6a5b2415-edf8-4ce4-8e51-4b0252ee9f5b" class="bulleted-list"><li style="list-style-type:disc">Google</li></ul><ul id="efe5dbfd-7d88-4364-9e39-78fbd352ef27" class="bulleted-list"><li style="list-style-type:disc">GitHub</li></ul><ul id="6e245639-1f20-41b3-8d6d-0d18427ab0bb" class="bulleted-list"><li style="list-style-type:disc">Twitter</li></ul><ul id="891b8e3c-c453-489e-a329-8262ee022528" class="bulleted-list"><li style="list-style-type:disc">Apple</li></ul><ul id="4c28ac28-e1c3-46b1-915e-c055702e0bcc" class="bulleted-list"><li style="list-style-type:disc"><strong><mark class="highlight-blue"><a href="https://en.wikipedia.org/wiki/List_of_OAuth_providers">Many more</a></mark></strong></li></ul><h2 id="c2d7d60d-fa8b-4f87-97b4-8c0c9d13db83" class="">OAuth 2’s Flow &amp; Scope</h2><figure id="67c60751-5b80-4175-ae1d-1d86b4c743b0" class="image"><a href="https://i.imgur.com/tAVrCLP.png"><img src="https://i.imgur.com/tAVrCLP.png"/></a><figcaption>The OAuth token flow as shown by Dropbox.</figcaption></figure><figure id="bf392e9b-5b27-4828-9a0c-22920fedc112" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Untitled.png"><img style="width:364px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Untitled.png"/></a><figcaption>The OAuth token flow as shown by Google.</figcaption></figure><p id="a4a6756a-0435-41e9-88a7-436c406b2fb4" class="">The ultimate goal is for the <em>client application</em> (our web app) to obtain an OAuth provider’s access token that allows the app to access the user’s resources from that provider’s APIs.</p><p id="404f3675-a0e3-4199-9822-eaf193e10d4d" class="">OAuth is <strong>token-based</strong>. A token is a generated string of characters.</p><p id="040c7841-0f05-4188-97dc-65c088a932d0" class="">Each token has a <strong>scope</strong> that determines what resources an app can access for that user.</p><p id="8aee30e7-589b-4f04-8698-0957da34201e" class="">Typically, including in this lesson, we will only be interested in accessing our users’ basic profile info (<strong>name</strong>, <strong>email</strong> &amp; <strong>avatar</strong>).</p><p id="fc2c7c65-c896-42b1-a807-a28f7148919f" class="">If your project needs to access more than a user’s basic profile, you will need to modify the <strong>scope</strong>. Check the specific provider’s documentation on how to access additional resources. Beware of accessing scopes that require sensitive or restricted scopes using Google OAuth - doing so may block access to your application until your app goes through a verification process carried out by Google. </p><p id="567eb5ec-d661-46d8-a586-84cdbde235dc" class="">Yes, OAuth is complex. But not to worry, we don’t have to know all of the nitty-gritty details to take advantage of it because we will be using PassportJS middleware that will handle most of the OAuth dance for us.</p><h2 id="c742dc99-4d44-4ec6-9f31-c12fb898e007" class="">Review Questions ❓</h2><ol type="1" id="a4760cb3-58ed-4729-81e4-b7f0fc5f3ad7" class="numbered-list" start="1"><li>What’s an advantage OAuth provides to users? A disadvantage?</li></ol><ol type="1" id="a126a4b1-df61-46aa-ad38-0b9846bb5e04" class="numbered-list" start="2"><li>What’s an advantage for web site businesses? A disadvantage?</li></ol><ol type="1" id="37b763b4-1082-40f4-86a6-dd826db04f63" class="numbered-list" start="3"><li>True or False: If your site allows users to authenticate via OAuth, you should ensure they create a “strong” password.</li></ol><ol type="1" id="2a2ede01-b572-475e-9ee1-0463b9571310" class="numbered-list" start="4"><li>What is the <em>client application</em> within the context of an OAuth provider?</li></ol><h1 id="f1a63e5c-e41d-468e-ae79-222278ca1c72" class="">Preview of the App We Will Build Today</h1><p id="8e449fbd-3713-4ac6-8c42-33c4a62ea027" class="">Today, we are going to take a starter application and add OAuth authentication &amp; authorization to it.</p><p id="0f8ebabf-1028-4142-aa53-ca187e3039ec" class="">As SEI Students, the app will allow you to list fun facts about yourself and read facts about fellow students, past and present.</p><p id="a2eeb3b1-d03f-4947-b418-75ceccf1f0a1" class="">The app will add you as a student to its database when you log in for the first time using Google’s OAuth service.</p><h2 id="5149fd4b-83af-41b2-a204-6152976b0136" class="">The App’s User Stories</h2><p id="6f8742c1-1a3e-4a81-b5b4-f314f77902f2" class="">The following stories are COMPLETE in the starter code:</p><h3 id="60a1e766-09a6-410c-b04b-3eb775b4fe6f" class="">As a Visitor:</h3><ul id="527c0ecc-f869-4428-966b-32e7727343cb" class="bulleted-list"><li style="list-style-type:disc">AAV, I want to view fun facts about past and present SEI Students so that I can know more about them.</li></ul><ul id="1e2397df-2f44-4aa8-bdc1-3baa84b53b7e" class="bulleted-list"><li style="list-style-type:disc">AAV, I want to be able to search for students by their name so that I don’t have to scroll through a long list.</li></ul><p id="fcfa5433-ade1-4551-a954-47ad1a5a3b1e" class="">We will complete these stories today:</p><h3 id="f747e85d-4218-4308-be2f-8dfc43010fd7" class="">As an Authenticated Student:</h3><ul id="d4700640-c6bf-4e71-b826-eba0a47dc33b" class="bulleted-list"><li style="list-style-type:disc">AAS, I want to add fun facts about myself so that I can amuse others.</li></ul><ul id="70a1f0a0-c1ab-4ea4-bfe0-0e3a3ccf833a" class="bulleted-list"><li style="list-style-type:disc">AAS, I want to be able to delete a fact about myself, in case I embarrass myself.</li></ul><p id="bbf7efda-b125-40d0-b0d4-431f0ffe4431" class=""><em><strong>Level Up</strong></em></p><ul id="aee42a5d-2505-4dad-9bd4-4321a1c91aef" class="bulleted-list"><li style="list-style-type:disc">AAS, I want to view the Google avatar instead of the placeholder icon.</li></ul><h2 id="88a07c1b-330d-4b73-9f9a-376afa4538c6" class="">Review the Starter Code</h2><ul id="6a531323-d7e4-4cc9-b035-6bff654066ed" class="bulleted-list"><li style="list-style-type:disc">The app was scaffolded using the <code>e-gen-replacement</code>.</li></ul><ul id="de333225-b233-468f-87cd-389c5e5073bb" class="bulleted-list"><li style="list-style-type:disc">The app has only one server-side view <mark class="highlight-orange"><code><strong>students/index.ejs</strong></code></mark>.</li></ul><ul id="ec90b426-0640-4fdc-aa47-baa5c07198bd" class="bulleted-list"><li style="list-style-type:disc">The app uses the <a href="https://getbootstrap.com/"><strong><mark class="highlight-blue">Bootstrap CSS framework</mark></strong></a>.</li></ul><ul id="341f5333-ad22-4861-b318-13f44908a6b9" class="bulleted-list"><li style="list-style-type:disc">The app currently won&#x27;t launch.</li></ul><h3 id="8068a5ab-eeca-40c5-a651-9bef6f8f0ee0" class="">.env file for “secrets”</h3><ul id="a5d13bb3-4b5c-4e99-b18f-6f40c89ecc4a" class="bulleted-list"><li style="list-style-type:disc">A <mark class="highlight-orange"><code>.env</code></mark> file is being used to provide <em>environment</em> variables such as the database’s connection string.</li></ul><ul id="0dc5b240-6dc8-4dae-bc6c-500b069e0004" class="bulleted-list"><li style="list-style-type:disc">Environment variables allow for the configuration of an application’s settings without changing the source code.</li></ul><ul id="df69cb22-221d-4224-86d5-d3588fe37184" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange"><code>.env</code></mark> files should not be pushed to GitHub because they often hold sensitive access tokens, database connection info, etc.</li></ul><ul id="1086b025-5531-42db-8c1b-7216c346be75" class="bulleted-list"><li style="list-style-type:disc">The <code>key=value</code> pairs in your <mark class="highlight-orange"><code>.env</code></mark> are attached to Node’s <code>process.env</code> object on line 1 of <code><mark class="highlight-orange"><strong>server.js</strong></mark></code>.</li></ul><ul id="449b0c49-703c-415d-93c1-72e2ec7f89e1" class="bulleted-list"><li style="list-style-type:disc">Then, on line 3 of <code><mark class="highlight-orange"><strong>config/database.js</strong></mark></code>, the database is connecting to the value held by <code>process.env.DATABASE_URL</code>.</li></ul><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="98d4c865-70a1-4758-9135-00f0951b7ddc"><div style="font-size:1.5em"><span class="icon">‼️</span></div><div style="width:100%">Most environment variables listed in <strong><mark class="highlight-orange"><code>.env</code></mark></strong> will need to be set on the server after you deploy the app. You&#x27;ll learn how to do this as part of deployment.</div></figure><h3 id="a5bc71df-12df-4560-91ab-437717726173" class="">Hosted MongoDB</h3><ul id="1644426c-d6b2-4a6a-b00d-4fdebd7f26a2" class="bulleted-list"><li style="list-style-type:disc">We&#x27;ll be using a shared <strong><mark class="highlight-blue"><a href="https://www.mongodb.com/cloud/atlas">MongoDB Atlas</a></mark></strong> database for this project.</li></ul><ul id="69d1963d-07e1-4a0e-b996-303adf542331" class="bulleted-list"><li style="list-style-type:disc">In the <mark class="highlight-orange"><code><strong>students/index.ejs</strong></code></mark> view, the <code>&lt;form action=&quot;/students&quot; method=&quot;GET&quot;&gt;</code> element submits a <em>search</em> to the server.</li></ul><ul id="9ef115fb-75f5-439f-a580-5fef94ab8332" class="bulleted-list"><li style="list-style-type:disc">Let’s take a look at how the <em>search</em> feature is implemented.</li></ul><h3 id="5a05218d-ba92-4e42-8f47-4a6301b795ff" class="">Search Form</h3><ul id="721bb7e7-cacf-428f-8f2e-20c12597afa1" class="bulleted-list"><li style="list-style-type:disc">When using <code>method=&quot;GET&quot;</code> instead of <code>method=&quot;POST&quot;</code>, an HTML form sends its data by appending it to the URL’s query string.</li></ul><h3 id="df2dc0f5-3d87-46fb-9fb4-dca42d452a42" class="">The View</h3><ul id="ad75b397-5518-4956-a781-6eb13d9e3452" class="bulleted-list"><li style="list-style-type:disc">In <code><mark class="highlight-orange"><strong>students/index.ejs</strong></mark></code> we see several Bootstrap classes are being used for layout and styling.</li></ul><ul id="ab19c20d-97c4-4965-b55e-50d1c13520c5" class="bulleted-list"><li style="list-style-type:disc">EJS is being used to render a “card” for each student.</li></ul><ul id="9c2c6a2b-1622-4a8e-b37c-72b8c48da471" class="bulleted-list"><li style="list-style-type:disc">EJS is also being used to initialize the values in the search form.</li></ul><h3 id="79002f44-83a3-45c4-a1a3-7b436f573f4a" class="">User Model</h3><ul id="844c2b31-9fbc-4820-94c6-a03271a17fbc" class="bulleted-list"><li style="list-style-type:disc">There is a <code>User</code> model that is being exported by <code><strong><mark class="highlight-orange">models/user.js</mark></strong></code>. </li></ul><ul id="922b3a9e-7569-4acb-a35a-81ade8a2aad0" class="bulleted-list"><li style="list-style-type:disc">This model holds all the properties related to our authentication implementation and any information about our user that we don&#x27;t want to be public on our site.</li></ul><ul id="59538a19-bc15-4feb-b1c0-b8830fca477e" class="bulleted-list"><li style="list-style-type:disc">This model also holds a 1:1 reference to the Student model</li></ul><h3 id="f296fa56-85be-4d53-9c9a-8848142e9eab" class="">Student Model</h3><ul id="c2f72822-3e78-4b6a-aa11-484c43a71f4d" class="bulleted-list"><li style="list-style-type:disc">The <code>Student</code> model is exported by <mark class="highlight-orange"><code><strong>models/student.js</strong></code></mark>.</li></ul><ul id="5a9f7d58-7467-4651-978e-5e6757514397" class="bulleted-list"><li style="list-style-type:disc">This model holds all the public properties about our user - their name, their avatar, and their facts.</li></ul><ul id="7b05c5a2-6060-4260-a675-fd9b42ed98b6" class="bulleted-list"><li style="list-style-type:disc">We use the <code>factSchema</code> to define the structure for the <em>fact</em> subdocuments being <em>embedded</em> within a <em>student</em> document’s <code>facts</code> property.</li></ul><ul id="4bd94e17-c02f-4b79-9a8e-d68407e60615" class="bulleted-list"><li style="list-style-type:disc">We have defined the <code>avatar</code> property in advance for implementing getting the student avatar image as a level up.</li></ul><ul id="078f4757-fbd3-4697-b9f7-f766e80d4977" class="bulleted-list"><li style="list-style-type:disc">As you know, Mongoose schemas define the structure of documents, but only Models create collections in the database.</li></ul><ul id="f69a4cba-0555-4a92-a9b5-034136a7888b" class="bulleted-list"><li style="list-style-type:disc">A student’s <em>facts</em> are a perfect use case for embedding.</li></ul><ul id="e77cd800-9b63-4d4e-8988-cc13900b4c54" class="bulleted-list"><li style="list-style-type:disc">Thanks to the <code>factSchema</code>, when we push a new fact into the <code>facts</code> array, all we do is provide the <code>text</code> field, and an <code>_id</code> will automatically be created on the subdocument for us.</li></ul><h3 id="bb47c7a0-6c33-411f-a1af-fea603a25b45" class="">Routing</h3><ul id="d0cd4ee6-3e39-40d7-9c5a-ac6fbd397559" class="bulleted-list"><li style="list-style-type:disc">We have two separate route files: <code><mark class="highlight-orange"><strong>routes/index.js</strong></mark></code> &amp; <code><mark class="highlight-orange"><strong>routes/students.js</strong></mark></code>.</li></ul><ul id="70d478ba-9bf4-4398-9583-c4feffec426c" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange"><code><strong>routes/index.js</strong></code></mark> currently has only the root route defined that redirects to <code>GET /students</code> - the app’s main <code>index</code> view of students.</li></ul><ul id="62d00671-2275-472d-9974-f04278386ae4" class="bulleted-list"><li style="list-style-type:disc"><strong><mark class="highlight-orange"><code>routes/students.js</code></mark></strong> has three routes defined for the following actions:<div id="3ce288b9-03a7-4ba1-8a45-682dc6f22d38" class="collection-content"><h4 class="collection-title">Students Routes</h4><table class="collection-content"><thead><tr><th><span class="icon property-icon"><svg viewBox="0 0 14 14" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.4);flex-shrink:0;-webkit-backface-visibility:hidden" class="typesTitle"><path d="M7.73943662,8.6971831 C7.77640845,8.7834507 7.81338028,8.8943662 7.81338028,9.00528169 C7.81338028,9.49823944 7.40669014,9.89260563 6.91373239,9.89260563 C6.53169014,9.89260563 6.19894366,9.64612676 6.08802817,9.30105634 L5.75528169,8.33978873 L2.05809859,8.33978873 L1.72535211,9.30105634 C1.61443662,9.64612676 1.2693662,9.89260563 0.887323944,9.89260563 C0.394366197,9.89260563 0,9.49823944 0,9.00528169 C0,8.8943662 0.0246478873,8.7834507 0.0616197183,8.6971831 L2.46478873,2.48591549 C2.68661972,1.90669014 3.24119718,1.5 3.90669014,1.5 C4.55985915,1.5 5.12676056,1.90669014 5.34859155,2.48591549 L7.73943662,8.6971831 Z M2.60035211,6.82394366 L5.21302817,6.82394366 L3.90669014,3.10211268 L2.60035211,6.82394366 Z M11.3996479,3.70598592 C12.7552817,3.70598592 14,4.24823944 14,5.96126761 L14,9.07922535 C14,9.52288732 13.6549296,9.89260563 13.2112676,9.89260563 C12.8169014,9.89260563 12.471831,9.59683099 12.4225352,9.19014085 C12.028169,9.6584507 11.3257042,9.95422535 10.5492958,9.95422535 C9.60035211,9.95422535 8.47887324,9.31338028 8.47887324,7.98239437 C8.47887324,6.58978873 9.60035211,6.08450704 10.5492958,6.08450704 C11.3380282,6.08450704 12.040493,6.33098592 12.4348592,6.81161972 L12.4348592,5.98591549 C12.4348592,5.38204225 11.9172535,4.98767606 11.1285211,4.98767606 C10.6602113,4.98767606 10.2411972,5.11091549 9.80985915,5.38204225 C9.72359155,5.43133803 9.61267606,5.46830986 9.50176056,5.46830986 C9.18133803,5.46830986 8.91021127,5.1971831 8.91021127,4.86443662 C8.91021127,4.64260563 9.0334507,4.44542254 9.19366197,4.34683099 C9.87147887,3.90316901 10.6232394,3.70598592 11.3996479,3.70598592 Z M11.1778169,8.8943662 C11.6830986,8.8943662 12.1760563,8.72183099 12.4348592,8.37676056 L12.4348592,7.63732394 C12.1760563,7.29225352 11.6830986,7.11971831 11.1778169,7.11971831 C10.5616197,7.11971831 10.056338,7.45246479 10.056338,8.0193662 C10.056338,8.57394366 10.5616197,8.8943662 11.1778169,8.8943662 Z M0.65625,11.125 L13.34375,11.125 C13.7061869,11.125 14,11.4188131 14,11.78125 C14,12.1436869 13.7061869,12.4375 13.34375,12.4375 L0.65625,12.4375 C0.293813133,12.4375 4.43857149e-17,12.1436869 0,11.78125 C-4.43857149e-17,11.4188131 0.293813133,11.125 0.65625,11.125 Z"></path></svg></span>Purpose</th><th><span class="icon property-icon"><svg viewBox="0 0 14 14" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.4);flex-shrink:0;-webkit-backface-visibility:hidden" class="typesText"><path d="M7,4.56818 C7,4.29204 6.77614,4.06818 6.5,4.06818 L0.5,4.06818 C0.223858,4.06818 0,4.29204 0,4.56818 L0,5.61364 C0,5.88978 0.223858,6.11364 0.5,6.11364 L6.5,6.11364 C6.77614,6.11364 7,5.88978 7,5.61364 L7,4.56818 Z M0.5,1 C0.223858,1 0,1.223858 0,1.5 L0,2.54545 C0,2.8216 0.223858,3.04545 0.5,3.04545 L12.5,3.04545 C12.7761,3.04545 13,2.8216 13,2.54545 L13,1.5 C13,1.223858 12.7761,1 12.5,1 L0.5,1 Z M0,8.68182 C0,8.95796 0.223858,9.18182 0.5,9.18182 L11.5,9.18182 C11.7761,9.18182 12,8.95796 12,8.68182 L12,7.63636 C12,7.36022 11.7761,7.13636 11.5,7.13636 L0.5,7.13636 C0.223858,7.13636 0,7.36022 0,7.63636 L0,8.68182 Z M0,11.75 C0,12.0261 0.223858,12.25 0.5,12.25 L9.5,12.25 C9.77614,12.25 10,12.0261 10,11.75 L10,10.70455 C10,10.4284 9.77614,10.20455 9.5,10.20455 L0.5,10.20455 C0.223858,10.20455 0,10.4284 0,10.70455 L0,11.75 Z"></path></svg></span>Method</th><th><span class="icon property-icon"><svg viewBox="0 0 14 14" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.4);flex-shrink:0;-webkit-backface-visibility:hidden" class="typesText"><path d="M7,4.56818 C7,4.29204 6.77614,4.06818 6.5,4.06818 L0.5,4.06818 C0.223858,4.06818 0,4.29204 0,4.56818 L0,5.61364 C0,5.88978 0.223858,6.11364 0.5,6.11364 L6.5,6.11364 C6.77614,6.11364 7,5.88978 7,5.61364 L7,4.56818 Z M0.5,1 C0.223858,1 0,1.223858 0,1.5 L0,2.54545 C0,2.8216 0.223858,3.04545 0.5,3.04545 L12.5,3.04545 C12.7761,3.04545 13,2.8216 13,2.54545 L13,1.5 C13,1.223858 12.7761,1 12.5,1 L0.5,1 Z M0,8.68182 C0,8.95796 0.223858,9.18182 0.5,9.18182 L11.5,9.18182 C11.7761,9.18182 12,8.95796 12,8.68182 L12,7.63636 C12,7.36022 11.7761,7.13636 11.5,7.13636 L0.5,7.13636 C0.223858,7.13636 0,7.36022 0,7.63636 L0,8.68182 Z M0,11.75 C0,12.0261 0.223858,12.25 0.5,12.25 L9.5,12.25 C9.77614,12.25 10,12.0261 10,11.75 L10,10.70455 C10,10.4284 9.77614,10.20455 9.5,10.20455 L0.5,10.20455 C0.223858,10.20455 0,10.4284 0,10.70455 L0,11.75 Z"></path></svg></span>Path</th></tr></thead><tbody><tr id="da6ede05-08be-4b8b-b8ec-90da99a7d403"><td class="cell-title"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Students%20Routes%203ce288b903a74ba18a45682dc6f22d38/Display%20all%20students%20da6ede0508be4b8bb8ec90da99a7d403.html">Display all students</a></td><td class="cell-b;Wc"><code>GET</code></td><td class="cell-CGXU"><code>/students</code></td></tr><tr id="c6967c19-2525-43ad-abda-294ca488795c"><td class="cell-title"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Students%20Routes%203ce288b903a74ba18a45682dc6f22d38/Create%20a%20fact%20for%20a%20student%20c6967c19252543adabda294ca488795c.html">Create a fact for a student</a></td><td class="cell-b;Wc"><code>POST</code></td><td class="cell-CGXU"><code>/facts</code></td></tr><tr id="417e7e77-4b74-4974-8dca-20f0f3119223"><td class="cell-title"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Students%20Routes%203ce288b903a74ba18a45682dc6f22d38/Delete%20a%20fact%20417e7e774b7449748dca20f0f3119223.html">Delete a fact</a></td><td class="cell-b;Wc"><code>DELETE</code></td><td class="cell-CGXU"><code>/facts/:id</code></td></tr></tbody></table></div></li></ul><h3 id="ea05777c-972b-4eb8-8b8d-f401b12243c3" class=""><code>students</code> Controller</h3><ul id="b0c77371-2e41-4a3a-b461-f543d4b81657" class="bulleted-list"><li style="list-style-type:disc">The <code>index</code> action in <code><mark class="highlight-orange"><strong>controllers/students.js</strong></mark></code> is querying the <code>Student</code> model and providing the array of students to the <code><mark class="highlight-orange"><strong>students/index.ejs</strong></mark></code> view.</li></ul><ul id="9c1ee9ec-a928-4c5f-9237-0f7e869984ab" class="bulleted-list"><li style="list-style-type:disc">Review the comments and code to see how the <code>index</code> action does its job, whether or not a <em>search</em> has been submitted.</li></ul><h3 id="492e1459-c044-42d3-97ea-46f51a6b1c12" class=""><mark class="highlight-orange"><code>bin/www.js</code></mark></h3><ul id="22f61d1c-c8d7-4fc3-8837-149cb3303abb" class="bulleted-list"><li style="list-style-type:disc"><strong><code><mark class="highlight-orange">bin/www.js</mark></code></strong> has been reworked to provide a https connection instead of an http connection when we are not in production. We&#x27;ll discuss this more later when we implement https on our localhost.</li></ul><h1 id="3983830d-9806-4a6b-83da-f40984cf1f51" class="">Ready for Some OAuth?</h1><h3 id="a003c1f9-6e10-4e5c-ae55-3e6eecb5fbe7" class="">Today’s OAuth Game Plan</h3><ul id="de2a8dca-84d1-478b-9670-71bb5ac2900d" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 1:</strong> Register our App with Google’s OAuth Server</li></ul><ul id="a1338e4c-c3e6-4ee4-a3a3-d3962d250b7d" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 2</strong>: Implement HTTPS on localhost</li></ul><ul id="1bf822cf-900b-4751-897c-088f0d014b0a" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 3:</strong> Discuss PassportJS</li></ul><ul id="4834cf93-6a4c-41a6-a0c6-7a1e8fc4af71" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 4:</strong> Install &amp; Configure Session middleware</li></ul><ul id="e29617db-5d17-4ce1-91c6-079c30251893" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 5:</strong> Install PassportJS</li></ul><ul id="0e19931c-3cfe-45b4-962b-a8dcc09f577d" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 6:</strong> Create a Passport config module</li></ul><ul id="7d03a660-5131-474f-b0b0-ed30014c66a9" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 7:</strong> Install a Passport Strategy for OAuth</li></ul><ul id="8a131c12-4c3d-48a9-a95c-f5afbcc67da0" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 8:</strong> Configure Passport</li></ul><ul id="f79c8c88-03c7-4899-a0fc-88100f0d7ae7" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 9:</strong> Define routes for authentication</li></ul><ul id="b30f75df-ee55-4ec8-a489-f6dbe8ef7edc" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 10:</strong> Add Login/Logout UI</li></ul><ul id="079868ba-fa27-4a2b-abe3-3d38589d7ccb" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 11:</strong> Code the First User Story</li></ul><ul id="17398909-dc13-46aa-af2d-920922769368" class="bulleted-list"><li style="list-style-type:disc"><strong>Step 12:</strong> Add Authorization</li></ul><h2 id="64190596-5627-48ff-b8f3-677b49f22d19" class="">Step 1 - Register our App</h2><p id="9dfb1bff-b01c-4d44-aaf2-4ddb00087a43" class="">Every OAuth provider requires that we register our web app with it.</p><p id="6fb9f54d-8aa0-4d7f-bc22-a7289848fdd4" class="">When we do so, we obtain a <em>Client ID</em> and a <em>Client Secret</em> that identifies <strong>our application</strong> to the OAuth provider.</p><p id="ceb678e2-de4f-4a8f-85b9-bacc31ca43ed" class="">For this lesson, we are going to use <strong><mark class="highlight-blue"><a href="https://developers.google.com/identity/protocols/OAuth2">Google’s OAuth provider</a></mark></strong>.</p><p id="00f0cbf4-b792-4bd7-b20d-e2f6c75d14aa" class="">Time to register our app!</p><h3 id="46f67d63-fa2e-4889-a7db-8d1bd6a3c773" class="">Step 1.1 - Google Developers Console</h3><p id="4c0852dd-b98a-44c3-8ba5-893ac3555d8b" class="">You must be logged into a Google account that is not owned by any organization with an email address that you feel appropriate to be shared on the internet. Once logged in, navigate to the <mark class="highlight-red"><strong>Google Cloud Platform APIs &amp; Services Dashboard</strong></mark> page located <strong><mark class="highlight-blue"><a href="https://console.cloud.google.com/apis/dashboard">here</a></mark></strong>. </p><figure id="f1b58b6f-2b1e-4b5e-ba5c-51c13ddda8ec"><a href="https://console.cloud.google.com/apis/dashboard" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">Google Cloud Platform</div><div class="bookmark-description">Google Cloud Platform lets you build, deploy, and scale applications, websites, and services on the same infrastructure as Google.</div></div><div class="bookmark-href"><img src="https://accounts.google.com/favicon.ico" class="icon bookmark-icon"/>https://console.cloud.google.com/apis/dashboard</div></div><img src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="bookmark-image"/></a></figure><p id="bfa4a232-9a81-4d0e-b4af-88bbb458eb60" class="">You may have to agree to the Google Cloud Platform&#x27;s Terms of Service first. Here’s what you should see on this page:</p><figure id="05625a34-42c3-4916-8fbd-503c89b77b9a" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_9.20.53_PM.png"><img style="width:2100px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_9.20.53_PM.png"/></a><figcaption>The Google Cloud Platform APIs &amp; Services Dashboard</figcaption></figure><h3 id="93bbc1f5-d290-4ee6-ac9a-9f10ec14e719" class="">Step 1.2 - Create a Project</h3><p id="5781ea60-065a-4737-b2d2-950921d3ada0" class="">While on the APIs &amp; Services dashboard, click <mark class="highlight-red"><strong>Select a project</strong></mark>.</p><figure id="ff783315-96da-41d9-a37c-4c42200efed7" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_9.20.53_PM_(1).png"><img style="width:2100px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_9.20.53_PM_(1).png"/></a><figcaption>The Google Cloud Platform APIs &amp; Services Dashboard with the Select a project button highlighted.</figcaption></figure><p id="e1fcf8fb-04c7-4f1d-9685-2bb18689b267" class="">When the <mark class="highlight-red">Select a project</mark> pane has opened, click <mark class="highlight-red"><strong>NEW PROJECT</strong></mark>.</p><figure id="4ce59d9a-70ca-452a-ae79-3147a609456d" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_9.41.36_PM.png"><img style="width:2092px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_9.41.36_PM.png"/></a><figcaption>The Select a project pane with the NEW PROJECT link highlighted.</figcaption></figure><p id="b2ca56fe-941b-428c-bf35-39a242beb1e0" class="">On the <strong><mark class="highlight-red">New Project</mark></strong> page, update the <mark class="highlight-red"><strong>Project name</strong></mark> to something you like. Ensure that the project does not belong to an organization (The text in the <mark class="highlight-red"><strong>Location</strong></mark> field should read <mark class="highlight-red"><strong>No organization</strong></mark>) then click the <mark class="highlight-red"><strong>CREATE </strong></mark>button<strong> </strong>to create the project.</p><figure id="2ad7566e-8f9b-4a81-9188-a5655806bebc" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_9.50.02_PM.png"><img style="width:2096px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_9.50.02_PM.png"/></a><figcaption>The New Project page, filled out with a project name, and not assigned to an organization. The CREATE button is highlighted.</figcaption></figure><p id="ec99c296-96de-4be3-8df1-886bfb9a4298" class="">After clicking the <strong><mark class="highlight-red">CREATE</mark></strong> button, you&#x27;ll be sent back to the <mark class="highlight-red"><strong>APIs &amp; Services Dashboard</strong></mark> page. It might take a bit to create the project. You’ll see a notification in the nav bar near your user avatar when it’s been done. When the notification appears, click on it, then in the <mark class="highlight-red"><strong>Create Project</strong></mark> notification click <strong><mark class="highlight-red">SELECT PROJECT</mark></strong> in the project that you just created.</p><figure id="9de2731d-f23e-4f4d-8f8f-39196d9c85d5" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_8.48.59_AM.png"><img style="width:576px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_8.48.59_AM.png"/></a><figcaption>A new notification, showing us that our project has been created. The new project is highlighted. </figcaption></figure><p id="a402741c-22af-42f6-a313-a7749b95afd2" class="">After selecting the project from the <strong><mark class="highlight-red">Create Project</mark></strong> notification, the<mark class="highlight-red"><strong> APIs &amp; Services Dashboard </strong></mark>page should look like this. Note that the name of the project is now displayed next to the <strong><mark class="highlight-red">Google Cloud Platform</mark></strong> logo.</p><figure id="d08a32c8-8c76-4f3a-984a-b9a396d39d05" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_9.00.05_AM.png"><img style="width:2100px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_9.00.05_AM.png"/></a><figcaption>The APIs &amp; Services Dashboard with the name of the project highlighted in the nav bar.</figcaption></figure><h3 id="9917b90b-83c1-415d-ba6b-11bb03a1f632" class="">Step 1.3 - Enable the People API</h3><p id="86046594-15d4-488d-894e-d19f3149649e" class="">From the <mark class="highlight-red"><strong>APIs &amp; Services Dashboard </strong></mark>page, type <strong><mark class="highlight-red">People </mark></strong>in the <strong><mark class="highlight-red">Search products and resources</mark></strong> search bar located in the nav bar. When it appears, select the <strong><mark class="highlight-red">Google People API</mark></strong> result from the search results. </p><figure id="aa58a77a-30db-4b87-bcd9-ff04cc4aba52" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_9.47.17_AM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_9.47.17_AM.png"/></a><figcaption>The Google People API is shown after entering people as the search string in the search bar located in the nav bar.</figcaption></figure><p id="d5c92511-7bde-4a09-8d53-7ac8cc89b1c3" class="">Ensure that your project name is displayed next to the <strong><mark class="highlight-red">Google Cloud Platform</mark></strong> logo. If it is then click <mark class="highlight-red"><strong>ENABLE</strong></mark>.</p><figure id="467e487b-7f4d-47fa-87a3-80eba1c21f33" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_10.24.21_AM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_10.24.21_AM.png"/></a><figcaption>The Google People API page. The enable button is highlighted</figcaption></figure><p id="4b91b2c7-0142-490c-8491-6fb63c266ec6" class="">You&#x27;ll be taken to the <strong><mark class="highlight-red">People API Overview </mark></strong>page.<strong><mark class="highlight-red"> </mark></strong>Return to the <mark class="highlight-red"><strong>APIs &amp; Services Dashboard </strong></mark>by using the <strong><mark class="highlight-red">API &amp; Services</mark></strong> link. Do not click the <strong><mark class="highlight-red">People API </mark></strong>link.</p><figure id="bde62d20-b278-40f8-98a5-70dbfbd545d6" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_10.59.06_AM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_10.59.06_AM.png"/></a><figcaption>The People API Overview page with the APIs &amp; Services link highlighted.</figcaption></figure><h3 id="fb41b490-dc37-4c8f-8e66-f4f50143636e" class="">Step 1.4 - Configure OAuth consent</h3><p id="efd816b3-dd70-4b17-bed4-eb246e7a292b" class="">From the the <mark class="highlight-red"><strong>APIs &amp; Services Dashboard</strong></mark> page, click the <mark class="highlight-red"><strong>OAuth consent screen</strong></mark> option in the side menu.</p><figure id="0574e25d-1409-40c3-a2d8-f26055f5700b" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_10.00.49_PM.png"><img style="width:2096px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-17_at_10.00.49_PM.png"/></a><figcaption>The APIs &amp; Services Dashboard with the OAuth consent screen option highlighted.</figcaption></figure><p id="8dc16be6-7eab-4400-8e54-2399392f73c1" class="">On the<mark class="highlight-red"><strong> Oauth consent screen </strong></mark>click the <mark class="highlight-red"><strong>External</strong></mark> option and then click <mark class="highlight-red"><strong>CREATE</strong></mark>.</p><figure id="f7a19bc6-4fdf-410f-8168-5e328cf15f8a" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_7.01.15_PM.png"><img style="width:2100px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_7.01.15_PM.png"/></a><figcaption>The OAuth consent screen with the External option and the CREATE button highlighted</figcaption></figure><p id="025daf7f-82c5-47a4-8faa-ef6d15c267a1" class="">You&#x27;ll arrive on <strong><mark class="highlight-red">Step 1 of the Edit app registration </mark></strong>page. Note that the information you enter on this page will be user-facing - make sure you choose an appropriate app. Enter an <mark class="highlight-red"><strong>App name</strong></mark>, and select a <strong><mark class="highlight-red">User support email</mark></strong>. Do not enter anything on any of the other fields or upload an application logo - doing so may trigger Google&#x27;s OAuth verification process, which will cause your application to not be usable for 3-5 days.  </p><figure id="ed902a89-35d3-4818-ba6a-0e731fa892aa" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_7.13.12_PM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_7.13.12_PM.png"/></a><figcaption>The edit app registration page with the App name and User support email fields highlighted</figcaption></figure><p id="e5f7053a-7f0e-4c4c-8943-a6c8e06c1818" class="">Scroll down to the <mark class="highlight-red"><strong>Developer contact information </strong></mark>section and enter an email that you want Google to be able to contact you about any changes to this project in the <strong><mark class="highlight-red">Email addresses</mark></strong> field. Again, leave the other fields blank. Then click the <strong><mark class="highlight-red">SAVE AND CONTINUE</mark></strong> button.</p><figure id="89481aa1-1fba-4004-8869-26e0bb0b0f90" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_9.14.02_PM.png"><img style="width:2096px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_9.14.02_PM.png"/></a><figcaption>The first step on the Edit app registration page with the Email addresses field beneath the Developer contact information header highlighted, along with the save and continue button.</figcaption></figure><p id="ad907fad-2136-4e46-8822-fee54814e3c6" class="">You&#x27;ll arrive on <strong><mark class="highlight-red">Step 2 of the Edit app registration page</mark></strong>. Click on the <strong><mark class="highlight-red">ADD OR REMOVE SCOPES </mark></strong>button. </p><figure id="817e0da4-0664-436a-b1f8-566dfce70622" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_10.07.49_PM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_10.07.49_PM.png"/></a><figcaption>The second step on the Edit app registration page with the add or remove scopes button highlighted</figcaption></figure><p id="7c08ff3e-4685-44c2-8ea7-e4072c0cded5" class="">We want to have access to the user&#x27;s email and profile, so copy the following two scopes and paste them in the <strong><mark class="highlight-red">Manually add scopes </mark></strong>section on the <strong><mark class="highlight-red">Update selected scopes</mark></strong> pane. Then click the <strong><mark class="highlight-red">ADD TO TABLE </mark></strong>button.</p><pre id="a56290b3-8fba-4319-a3ad-1a341ff85ecb" class="code"><code>https://www.googleapis.com/auth/userinfo.email
+https://www.googleapis.com/auth/userinfo.profile</code></pre><figure id="4b7ccddf-fdf8-4018-b3a9-66cb7811bda0" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.11.07_PM.png"><img style="width:2094px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.11.07_PM.png"/></a><figcaption>The Update selected scopes popout toast with the values provided manually added and the add to table button highlighted.</figcaption></figure><p id="bc793078-cb23-4aeb-997a-483edc8045d5" class="">The <code>.../auth/userinfo.email</code> and <code>.../auth/userinfo.profile</code> scopes should be added and have selected checkboxes next to them. After confirming this, click the <strong><mark class="highlight-red">UPDATE</mark></strong> button.</p><figure id="dec785ee-ddc4-4746-a717-14a71ca3d3e8" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.15.04_PM_(1).png"><img style="width:1049px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.15.04_PM_(1).png"/></a><figcaption>The Update selected scopes pane with the new scopes added. The update button is highlighted.</figcaption></figure><p id="280f1f3d-20a1-4058-aec2-369930e0473b" class="">You&#x27;ll be taken back to <strong><mark class="highlight-red">Step 2 of the Edit app registration </mark></strong>page. The two scopes we just added should be shown in the <strong><mark class="highlight-red">Your non-sensitive scopes</mark></strong> table. Confirm that they are, and also that no scopes are listed in the <mark class="highlight-red"><strong>Your sensitive scopes </strong></mark>or <mark class="highlight-red"><strong>Your restricted scopes </strong></mark>tables. After you have done so click the <mark class="highlight-red"><strong>SAVE AND CONTINUE </strong></mark>button.</p><figure id="7a248cc9-8090-4c69-9e26-441acc19623e" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.23.20_PM.png"><img style="width:1047px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.23.20_PM.png"/></a><figcaption>Step 2 of the Edit app registration page with our new scopes added. The save and continue button is highlighted.</figcaption></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="558abe31-35a1-4941-a790-35cbf6c3098b"><div style="font-size:1.5em"><span class="icon">🧠</span></div><div style="width:100%">These scopes aren&#x27;t strictly required to be added - we&#x27;ll have access to them by just associating the People API with our application - but by adding them if Google makes any modifications to these scopes later, you&#x27;ll be informed so that you&#x27;re able to make the necessary changes to your applicaitons at that time. </div></figure><p id="688388b9-15f7-4f7e-b411-7686d89150c6" class="">You&#x27;ll arrive on <strong><mark class="highlight-red">Step 3 of the Edit app registration </mark></strong>page. Click the <strong><mark class="highlight-red">SAVE AND CONTINUE</mark></strong> button.</p><figure id="00190c57-5b07-4681-a065-02663f8e948e" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.31.14_PM.png"><img style="width:2096px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.31.14_PM.png"/></a><figcaption>Step 3 of the Edit app registration page. The save and continue button is highlighted.</figcaption></figure><p id="d40066d8-ca0c-40b4-8d5b-e4328b013e88" class="">Finally, you&#x27;ll arrive at <strong><mark class="highlight-red">Step 4 of the Edit app registration </mark></strong>page. Confirm the information on the page matches your intent, then scroll to the bottom and click the <strong><mark class="highlight-red">BACK TO DASHBOARD </mark></strong>button.</p><figure id="5480805e-1290-4797-8230-7c904c45755e" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.36.02_PM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.36.02_PM.png"/></a><figcaption>Step 4 of the Edit app registration page. The back to dashboard button is highlighted.</figcaption></figure><p id="c6bff5c7-991f-4952-9d39-b26fce2a80f8" class="">You&#x27;ll be taken back to the <strong><mark class="highlight-red">OAuth consent screen dashboard</mark></strong>. Click the <strong><mark class="highlight-red">PUBLISH APP</mark></strong> button. </p><figure id="9476bf22-47e9-4647-8338-9e3ff6c9253d" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.43.21_PM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.43.21_PM.png"/></a><figcaption>The OAuth consent screen dashboard. The publish app button is highlighted.</figcaption></figure><p id="be7883ad-a33f-4350-af68-32a13f9ddfcf" class="">The <strong><mark class="highlight-red">Push to production?</mark></strong> modal will appear. Ensure that you receive a message stating that you do not need to submit your app for verification. Click the <strong><mark class="highlight-red">CONFIRM</mark></strong> link.</p><figure id="7667cf2d-ab64-4ce6-ae65-343ae6f98b71" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.46.12_PM.png"><img style="width:1270px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.46.12_PM.png"/></a><figcaption>The Push to production modal, showing that this app does not need to be submitted for verification, with the confirm button highlighted.</figcaption></figure><h3 id="796066a7-4c55-4717-854e-e00b2d49f745" class="">Step 1.5 - Create credentials</h3><p id="24f8d200-98b2-4bbe-a61d-8bb62f79ea21" class="">The <strong><mark class="highlight-red">OAuth consent screen dashboard</mark></strong> will re-appear, and display a message that <strong><mark class="highlight-red">Verification is not required</mark></strong> under the <strong><mark class="highlight-red">Verification Status </mark></strong>header, and a message that the <strong><mark class="highlight-red">Publishing status</mark></strong> is <strong><mark class="highlight-red">In production</mark></strong>. Confirm both of these statuses display these messages, then click the <strong><mark class="highlight-red">Credentials</mark></strong> option in the side menu.</p><figure id="93e80aa9-695a-4c8e-9b9f-7b88d9b6460a" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.52.55_PM.png"><img style="width:2096px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-18_at_11.52.55_PM.png"/></a><figcaption>The OAuth consent screen dashboard, stating that verification of our project is not required and that we are in production. </figcaption></figure><p id="540a62df-e180-485d-bd3c-b98f5534bb27" class="">On the <mark class="highlight-red"><strong>APIs &amp; Services Credentials</strong></mark><strong><mark class="highlight-orange"> </mark></strong>page, click the <strong><mark class="highlight-red">+ CREATE CREDENTIALS</mark></strong> link and select <strong><mark class="highlight-red">OAuth client ID</mark></strong> from the dropdown. </p><figure id="7aa2db42-60f8-4448-afbc-78adc2b47ba6" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-19_at_12.02.35_AM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-19_at_12.02.35_AM.png"/></a><figcaption>The APIs &amp; Services Credentials page with the + create credentials link on the page and OAuth client ID in the + create credentials dropdown highlighted.</figcaption></figure><p id="181c4431-459a-4e24-b3fc-e406b53c92d8" class="">On the <strong><mark class="highlight-red">Create OAuth client ID </mark></strong>page click the <strong><mark class="highlight-red">Application type</mark></strong> dropdown and select <strong><mark class="highlight-red">Web application</mark></strong>.</p><figure id="1a1899f0-ab03-48e1-b893-36380ed279a7" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-19_at_9.07.04_AM.png"><img style="width:2096px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-19_at_9.07.04_AM.png"/></a><figcaption>The Create OAuth client ID<strong><mark class="highlight-red"> </mark></strong>page with the Application type dropdown highlighted. </figcaption></figure><figure id="ad51feaa-0e36-4319-81cc-9a169e571ec4" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-19_at_9.10.23_AM.png"><img style="width:2098px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-19_at_9.10.23_AM.png"/></a><figcaption>The Application type dropdown expanded on the Create OAuth client ID page. The Web application option is highlighted.</figcaption></figure><p id="6964a2bb-12ec-4c58-bc92-d26aa517c7e2" class="">After you select <strong><mark class="highlight-red">Web application</mark></strong> as the <strong><mark class="highlight-red">Application type</mark></strong> there will be additional elements added to the page. Enter a sensible value in the <strong><mark class="highlight-red">Name</mark></strong> field, then click the <strong><mark class="highlight-red">+ ADD URI </mark></strong>button under the <strong><mark class="highlight-red">Authorized redirect URIs </mark></strong>header. <em><strong>NOT </strong></em>the <strong><mark class="highlight-red">Authorized JavaScript origins</mark></strong> header. </p><figure id="a214bfd9-7d91-4b63-9cc1-dcb5b4a33260" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-19_at_9.21.33_AM.png"><img style="width:2096px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Screen_Shot_2021-03-19_at_9.21.33_AM.png"/></a><figcaption>The Create OAuth client ID page with the Name field and the + add URI button under the Authorized redirect URIs header highlighted. </figcaption></figure><p id="0d189dae-1bc4-4341-b704-e3a2d1419446" class="">A field will appear prompting you to enter a redirect URI. Type in the following<mark class="highlight-pink"> </mark>text (you could even copy this text from here, so you don’t make any mistakes!) then press <mark class="highlight-pink"><strong><code>Enter</code></strong></mark>. This will be the value of <code>GOOGLE_CALLBACK</code> in your <code><mark class="highlight-orange">.env</mark></code> file. </p><pre id="7222a7c2-b1bd-4d5c-8f07-b41b2dd45701" class="code"><code>https://localhost:3000/auth/google/oauth2callback</code></pre><figure id="e1207170-9840-4cd5-9dc0-8240018e2180" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/image_(38).png"><img style="width:530px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/image_(38).png"/></a><figcaption>The first URIs field is highlighted.</figcaption></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="3120cd3f-3e75-4c86-930b-7cf1d2d6c82e"><div style="font-size:1.5em"><span class="icon">⚠️</span></div><div style="width:100%">You will have to add an entry in the Authorized redirect URIs once you have deployed your application to Heroku - something like:
+<code>https://&lt;your-app-name&gt;.herokuapp.com/auth/google/oauth2callback</code>.</div></figure><p id="7ae7efcd-c7a1-4c06-94ef-757b421a97c2" class="">Add this key=value pair to your <mark class="highlight-orange"><code>.env</code></mark> file:</p><pre id="bfd0260c-66ad-40b0-a872-705214746566" class="code"><code>GOOGLE_CALLBACK=https://localhost:3000/auth/google/oauth2callback</code></pre><h3 id="933830e2-709f-48b8-a617-b61d442d11c5" class="">Step 1.6 - Add the Client ID, Client Secret, and Callback URI to <mark class="highlight-orange"><code>.env</code></mark></h3><p id="0c9fcd1f-2ae3-4948-a838-a8cd3decb538" class="">A pop up modal will now be presented informing you that the client was created with your app’s <mark class="highlight-red"><strong>Client ID </strong></mark>and <strong><mark class="highlight-red">Client Secret</mark></strong><strong> </strong>credentials:</p><figure id="42a0e9ff-1122-485d-a2b9-896d7f12bd2c" class="image"><a href="https://i.imgur.com/gSUFsJe.png"><img src="https://i.imgur.com/gSUFsJe.png"/></a><figcaption>The OAuth client created modal containing the Client ID and Client Secret for this application.</figcaption></figure><p id="61354f2b-1c6e-491f-b9a6-bc7a7e64fba0" class="">Let’s add the credentials, along with that callback URI we provided, to the <strong><mark class="highlight-orange"><code>.env</code></mark></strong> file so that it looks something like this (<strong><em>do not copy this exactly, it will not work</em></strong>):</p><pre id="b93dafea-549d-471a-8b72-28082c8a2a1c" class="code code-wrap"><code>DATABASE_URL=mongodb+srv://&lt;user&gt;:&lt;pw&gt;@sei-students-1btwt.azure.mongodb.students?retryWrites=true
+GOOGLE_CALLBACK=https://localhost:3000/auth/google/oauth2callback
+GOOGLE_CLIENT_ID=608396439733-qmrjuqdg2q8s7tkuevf4ghvmmrieme7s.apps.googlecontent.com
+GOOGLE_SECRET=a2ElI4ylI2y20a5jyPkR9WEC</code></pre><h3 id="8d05d897-9298-4fd3-970c-89584807449e" class="">Congrats on Registering your App!</h3><p id="04cdcde5-4f9a-4028-8c0c-d47a1e79cfb3" class="">With registering our app now completed, just remember that each provider will have a unique process. Set this browser tab aside incase you need to debug anything in Google later.</p><p id="1ac63504-176e-4206-b4d7-56d9ccbcd483" class="">
+</p><h2 id="6076058e-d252-45bb-a225-f3f76e2ae1de" class="">Step 2 - Passport Discussion</h2><p id="396b8aae-79f5-41e0-8796-c028ff918d71" class="">Implementing OAuth is complex. Redirects are going on everywhere, you have to deal with access tokens that only last for a short time, refresh tokens have to be used to obtain a fresh access token, etc.</p><p id="7d5fdb4f-8e23-4072-b41f-8c6aa09e0552" class="">As usual, we will stand on the shoulders of giants that have done much of the heavy lifting for us - enter <a href="https://www.passportjs.org/"><strong><mark class="highlight-blue">PassportJS</mark></strong></a>.</p><figure id="cb7981f0-6a5c-4d02-b56e-1f3dd21e8ffb"><a href="https://www.passportjs.org/" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">Passport.js</div><div class="bookmark-description">Passport is authentication middleware for Node.js. Extremely flexible and modular, Passport can be unobtrusively dropped in to any Express-based web application. A comprehensive set of strategies support authentication using a username and password, Facebook, Twitter, and more.</div></div><div class="bookmark-href"><img src="http://www.passportjs.org/images/favicon/favicon.ico" class="icon bookmark-icon"/>https://www.passportjs.org/</div></div><img src="http://www.passportjs.org/images/facebook-card.png" class="bookmark-image"/></a></figure><p id="6a906e86-2add-4976-88a6-66a83c47a2f6" class="">Passport is by far the most popular authentication framework for Express apps.</p><p id="f5b87ec2-e1bd-4de7-ad13-4e48f3d13583" class=""><strong>Passport’s website</strong> states that it provides <em>Simple, unobtrusive authentication for Node.js</em>.</p><p id="84c71dfe-57f6-4aae-b1c6-73de27c1e5f2" class="">This means that it handles much of the mundane tasks related to authentication for us, but leaves the details up to us, for example, not forcing us to configure our user model a certain way.</p><p id="16ad4c83-5484-4106-b6b7-0189b245be98" class="">There are numerous types of authentication; if Passport itself were designed to do them all, it would be gigantic!</p><p id="22caa7f8-40aa-464f-b731-108ecae77c99" class="">Instead, Passport uses <strong>Strategies</strong> designed to handle a given type of authentication. Think of them as plug-ins for Passport.</p><p id="04548860-67aa-4e93-8103-77e12e6fc847" class="">Each Express app with Passport can use one or more of these strategies.</p><p id="b40f4f26-3d6d-4c12-b418-bedd959ed7f9" class=""><strong>Passport’s site</strong> currently shows over 500 strategies available.</p><p id="5574435d-faf0-411c-92a5-d8353e721529" class="">OAuth2, although a standard, allows for certain implementation details to be customized by OAuth providers such as Facebook and Google.</p><p id="749887cd-bcb6-4b07-aa8a-fff17d02c985" class="">As such, there are strategies available for each flavor of OAuth provider.</p><p id="1c38cf33-7cf2-45b1-b4db-6a8cef8f2193" class="">For this lesson, we will be using the <a href="https://github.com/jaredhanson/passport-google-oauth2"><strong><mark class="highlight-blue">passport-google-oauth2</mark></strong></a> strategy.</p><p id="01b70f0e-bbc5-4d28-841e-3bf6eee0768e" class=""><strong>Passport is just middleware designed to authenticate requests</strong>.</p><ul id="13e309f3-5fdd-4264-8314-cebc867f5138" class="bulleted-list"><li style="list-style-type:disc">When a request is sent from an authenticated user, Passport’s middleware will automatically add a <code>user</code> property to the <code>req</code> object.</li></ul><ul id="919db5af-effe-4c97-ba45-1f6d125c4418" class="bulleted-list"><li style="list-style-type:disc"><code>req.user</code> will be the logged-in user’s Mongoose document! <mark class="highlight-red"><em><strong>This is super important!</strong></em></mark></li></ul><ul id="1f9deee1-3f52-44a6-811a-bd26bdfa4f80" class="bulleted-list"><li style="list-style-type:disc">You will then be able to access the <code>req.user</code> document in all of the controller actions!</li></ul><h2 id="ee6f0f35-d0bc-442d-b39d-40472c39b71a" class="">Step 3 - Session Middleware</h2><p id="27001366-bc91-4a8b-a633-73cb5bffaa60" class="">Before we install Passport and a strategy, we need to install the <strong><a href="https://github.com/expressjs/session?_ga=1.40272994.1784656250.1446759094"><code>express-session</code></a></strong> middleware.</p><p id="0a7fac7a-c2af-4c98-8a63-8541fb8cb42f" class="">Sessions are a server-side way of remembering a user’s browser session.</p><p id="486288c6-3507-45bd-80c1-20d656c97839" class="">Sessions remember the browser session by setting a cookie that contains a <em>session id</em>. No other data is stored in the cookie, just the <em>id</em> of the session.</p><p id="49566fdd-1949-4a50-ab83-c933ffb47bc0" class="">On the server-side, your application can store data about the user’s session.</p><p id="0873d48f-65a9-4445-a8b0-4b2a00e62eb1" class="">Passport will use the session, which is an in-memory data-store by default, to store a nugget of information that will allow us to look up the user in the database.</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="c464c731-9658-4a25-a899-599069585681"><div style="font-size:1.5em"><span class="icon">⚠️</span></div><div style="width:100%">Because sessions are maintained in memory, session data will be lost if the server restarts. You will see this happen when nodemon restarts the server, and you are no longer logged in.</div></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="abf1df76-9fed-43c6-9734-411ede7d5609"><div style="font-size:1.5em"><span class="icon">‼️</span></div><div style="width:100%">In a large-scale production application you would want to store sessions in a database store, like one listed <strong><mark class="highlight-blue"><a href="https://www.npmjs.com/package/express-session#compatible-session-stores">here</a></mark></strong>. There are even MongoDB options!</div></figure><h3 id="e8595989-6c7d-4e86-a001-267599ab1c65" class="">Step 3.1 - Installing Session Middleware</h3><p id="0f8d1598-c263-4011-b4cc-794747d13d7e" class="">Let’s install the module:</p><pre id="b2689c9c-104f-454c-b47d-0bb6b66811d3" class="code code-wrap"><code>npm i express-session</code></pre><p id="6c0e17f2-17e0-41c5-9ecc-ec17f5ee9fdd" class="">Next, import it it below the <code>create-error</code> import line. This line REPLACES <code>import cookieParser from &#x27;cookie-parser&#x27;</code>:</p><pre id="0953cf4d-facd-4bcb-b042-6374ae73dc22" class="code code-wrap"><code>import createError from &#x27;http-errors&#x27;
+// new code below - this REPLACES import cookieParser from &#x27;cookie-parser&#x27;
+import session from &#x27;express-session&#x27;</code></pre><h3 id="c07c9b7f-8cb1-491c-8e91-8be0525dd284" class="">Step 3.2 - Configure and Mount Session Middleware</h3><p id="8ca9658b-2202-4f06-b5bd-ddd892576a84" class="">Now, we can configure and mount the session middleware below. The code you are adding REPLACES <code>app.use(cookieParser())</code></p><pre id="ce221b99-1385-4538-b99b-ddbf5f11c388" class="code code-wrap"><code>app.use(express.urlencoded({ extended: true }))
+// new code below this REPLACES app.use(cookieParser())
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: &#x27;lax&#x27;,
+    }
+  })
+)</code></pre><p id="71b8e4a9-28ae-44b4-bf53-3f3cb604338e" class="">The <code>secret</code> is used to digitally sign the session cookie, making it very secure. You can set it to anything you want in your <mark class="highlight-orange"><code>.env</code></mark> file. <code>resave</code> set to <code>false</code> keeps the session from being saved back to the session store on every user request. Learn more <strong><mark class="highlight-blue"><a href="https://www.npmjs.com/package/express-session#resave">here</a></mark></strong>. <code>saveUninitialized</code> set to <code>false</code> prevents visitors that have not logged in from creating sessions which reduces our storage usage. Learn more <strong><mark class="highlight-blue"><a href="https://www.npmjs.com/package/express-session#saveuninitialized">here</a></mark></strong>. The <code>cookie.sameSite</code> option set to <code>&quot;lax&quot;</code> controls the conditions under which the cookie will be sent. This is necessary to prevent browser errors, see <strong><mark class="highlight-blue"><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite#fixing_common_warnings">here</a></mark></strong> for more.</p><p id="f84b5e21-33c2-4bd1-94c1-15f95020c7eb" class="">Be sure to add the <code>SESSION_SECRET</code> to your <mark class="highlight-orange"><code>.env</code></mark> file:</p><pre id="87c76724-9cab-4e86-9ea1-c8f47c1e200c" class="code code-wrap"><code>SESSION_SECRET=&amp;MAdfn9nuu\mkwr?k-+d6w!^vZc/9G%jNi(vcPe&amp;N@J7.&gt;UA4pe7_)</code></pre><h3 id="a0fe0617-4d7d-49b9-ac59-68e380636086" class="">Step 3.3 - Uninstall <code>cookie-parser</code></h3><p id="291a735f-41b7-4707-80d4-32870079f530" class="">Use this command to uninstall <code>cookie-parser</code>, we won&#x27;t be using it as it can cause problems with <code>express-session</code>. See <strong><mark class="highlight-blue"><a href="https://www.npmjs.com/package/express-session#sessionoptions">here</a></mark></strong>.</p><pre id="bf702d31-a873-4246-9a2e-8d32c15aea15" class="code"><code>npm uninstall cookie-parser</code></pre><h3 id="afdbed94-01ff-45fb-afbb-656f6749dbb9" class="">Review Questions ❓</h3><ol type="1" id="eff36501-9327-467a-b08c-e34cfae89aa1" class="numbered-list" start="1"><li>Passport uses ___ designed to handle specific types of authentication.</li></ol><ol type="1" id="88c91c3e-1187-4210-8106-c333f91fc09e" class="numbered-list" start="2"><li>If there is an authenticated user, the request (<code>req</code>) object will have what attached to it by Passport?</li></ol><h2 id="25ab9459-dfab-4062-84a1-74f0a239d257" class="">Step 4 - Install Passport</h2><p id="3f75607b-f3ca-4876-8223-3e45910c1d6d" class="">The Passport middleware is easy to install, but challenging to set up correctly.</p><p id="2717c9e0-c91d-4a06-bf45-db72ab61112e" class="">First the easy part:</p><pre id="63d283ce-01a5-41e5-b3e6-652dd4ea3c5f" class="code code-wrap"><code>npm i passport</code></pre><p id="3e970782-d861-4738-8a58-b1f85267ecd0" class="">Import it as usual below <code>method-overrride</code>:</p><pre id="6a545e74-c945-4d1f-934b-17df3a50a52b" class="code code-wrap"><code>import methodOverride from &#x27;method-override&#x27;
+// new code below
+import passport from &#x27;passport&#x27;</code></pre><h3 id="d87bc37e-d120-44fb-8f49-03a1ab05e1c5" class="">Step 4.1 - Mount Passport</h3><p id="774e1995-c00f-429b-84b6-c9815df053b7" class="">With Passport imported, we need to mount it. Be sure to mount it <strong>after</strong> the session middleware and always <strong>before</strong> any routes that would need access to the current user:</p><pre id="acf60f3b-e1b0-4295-9910-7bca483ff146" class="code code-wrap"><code>// app.use(session({... code above
+app.use(passport.initialize())
+app.use(passport.session())</code></pre><p id="cc516f7a-0b4d-4da8-9038-33e640cc7178" class="">The way <code>passport</code> middleware is being mounted is straight from the docs.</p><h2 id="0af82c5d-62d3-48fe-9bce-f946dcccaeb9" class="">Step 5 - Create a Passport Config Module</h2><p id="b614fe98-ab59-42e3-ac4e-11615d6f7444" class="">Because it takes a significant amount of code to configure Passport, we will create a separate module so that we don’t pollute <mark class="highlight-orange"><code><strong>server.js</strong></code></mark>.</p><p id="109b940d-db55-4bc9-83a9-5f41963f5fb1" class="">Let’s create the file:</p><pre id="9015d81d-03cd-486d-abf2-52f13e7d4f43" class="code code-wrap"><code>touch config/passport.js</code></pre><p id="7baec33a-b836-45c4-af65-5d37af2b4fa9" class="">In case you’re wondering, although the module is named the same as the <code>passport</code> module we’ve already imported, it won’t cause a problem because a module’s full path uniquely identifies it to Node.</p><h3 id="3e336705-2a67-4356-b4bf-018f592755da" class="">Step 5.1 - Passport Module’s Exports Code</h3><p id="226324d2-8ab0-421a-8b20-e4b175d4f5d7" class="">Our <strong><mark class="highlight-orange"><code>config/passport.js</code></mark></strong> module is not middleware.</p><p id="067f9230-8b02-42b5-be3d-37414c7e0b45" class="">Its code will configure Passport, and we will be done with it. We’re not going to export anything either.</p><p id="4dfc577d-6043-44de-8fbe-58670b386646" class="">Import it below our database in <code><strong><mark class="highlight-orange">server.js</mark></strong></code>:</p><pre id="e387beed-33c7-443c-8108-d6b39867e325" class="code code-wrap"><code>import(&#x27;./config/database.js&#x27;)
+// new code below
+// configure passport
+import(&#x27;./config/passport.js&#x27;)</code></pre><h3 id="9eae6eb4-3263-44ab-894b-6cca8fe36168" class="">Step 5.2 - Import Passport</h3><p id="1b03255e-f4c9-413a-a3f4-1dbb16eb053d" class="">In the <mark class="highlight-orange"><code>config/passport.js</code></mark> module, we will need access to the <code>passport</code> module:</p><pre id="702f590c-75f8-4883-a042-36214f68ebe0" class="code code-wrap"><code>import passport from &#x27;passport&#x27;</code></pre><p id="ee3cd989-551e-4bd7-b775-2259cea2ffd2" class="">Now on to the <em>strategy</em>.</p><h2 id="17462b9e-09fa-4eed-83eb-6ce8f6454785" class="">Step 6 - Install the OAuth Strategy</h2><p id="17ff37fe-7ec4-4868-980a-529fc54233fb" class="">Time to install the strategy that will implement Google’s flavor of OAuth:</p><pre id="97d8cfec-2600-4292-a0ab-d401ca33c5f2" class="code code-wrap"><code>npm i passport-google-oauth20</code></pre><p id="f32e98e2-d2cf-4e84-9e85-4072826f8803" class="">This module only implements Google’s OAuth 2.0 API.</p><p id="af94621e-6fef-490a-a732-402abc6deda4" class="">Note that <em>OAuth 1.0</em> still exists and can be implemented, but it’s obsolete and you shouldn’t use it.</p><h3 id="79d1358d-9740-4666-93c0-73db3f911db7" class="">Step 6.1 - Import the OAuth Strategy</h3><p id="f17d73fd-0da3-4e96-85ac-5a05c4d4a73b" class="">Now let’s import the <code>passport-google-oauth20</code> module below that of <code>passport</code> in <strong><mark class="highlight-orange"><code>config/passport.js</code></mark></strong>:</p><pre id="af4ad8ff-700f-446f-b0a4-001c4723f712" class="code code-wrap"><code>import passport  from &#x27;passport&#x27;
+// new code below
+import { Strategy as GoogleStrategy } from &#x27;passport-google-oauth20&#x27;</code></pre><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="0875f480-6221-432b-b50c-9ade6a28bc30"><div style="font-size:1.5em"><span class="icon">❓</span></div><div style="width:100%">Note that the variable is named using upper-camel-case. 
+<strong>What does that typically hint at?</strong></div></figure><p id="afc73e71-5468-47a3-a235-1da1c7bab050" class="">Let’s make sure there are no errors before moving on to the fun stuff!</p><h2 id="81393c4a-fc96-4bfa-a040-07a418c70a52" class="">Step 7 - Configuring Passport</h2><p id="49601d94-c9e4-4004-bdf1-48ce3ec3b559" class="">To configure Passport, we will:</p><ol type="1" id="76dbb240-e5eb-47f7-90c5-27938d5196df" class="numbered-list" start="1"><li>Call the <code>passport.use</code> method to plug-in an instance of the OAuth strategy and provide a <code>verify</code> callback function called whenever a user has logged in using OAuth.</li></ol><ol type="1" id="2c00c3c5-cc48-40fb-91fa-ae1670eb6bba" class="numbered-list" start="2"><li>Define a <code>serializeUser</code> method that Passport will call after the <code>verify</code> callback to let Passport know what data we want to store in the session to identify our user.</li></ol><ol type="1" id="9d7ea555-ccac-40dc-a2ab-e56707c0423e" class="numbered-list" start="3"><li>Define a <code>deserializeUser</code> method that Passport will call on each request when a user is logged in. What we return will be assigned to the <code>req.user</code> object.</li></ol><h3 id="e4d116ec-9438-4a09-99b3-f6bbf0b13a1a" class="">Step 7.1 <code>passport.use</code></h3><p id="f1fc7e55-4b3f-42f7-8f5b-5945fb2eeb40" class="">Now it’s time to call the <code>passport.use</code> method to plug-in an instance of the OAuth strategy and provide a <code>verify</code> callback function that will be called whenever a user logs in with OAuth.</p><pre id="1bac6413-cce6-4500-85c5-836d74cdd951" class="code code-wrap"><code>import { Strategy as GoogleStrategy } from &#x27;passport-google-oauth20&#x27;
+
+// new code below
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK,
+    },
+    function (accessToken, refreshToken, profile, done) {
+      // a user has logged in with OAuth...
+    }
+  )
+)</code></pre><p id="45d745f9-2d66-4564-8b79-9e52c7ad0a15" class="">Note the settings from the <mark class="highlight-orange"><code>.env</code></mark> file being passed to the <code>GoogleStrategy</code> constructor function.</p><p id="74069de5-7505-4ef6-b940-59936264c6f5" class="">Next, we have to code the <code>verify</code> callback function.</p><h3 id="7b3e4b46-e027-45bc-8a57-8433baa1999f" class="">Step 7.2 - The <code>Verify</code> Callback</h3><p id="387bfaec-3a0c-41f5-899e-97bc6137087c" class="">The <code>verify</code> callback will be called by Passport when a user has logged in with OAuth.</p><p id="c02bc467-b21e-4556-8948-e92f0dd99f06" class="">It’s called a <code>verify</code> callback because, with most other strategies, we would have to verify the credentials, but with OAuth, well, there are no credentials!</p><p id="0486166e-9807-4cd2-9981-7416bd7daabd" class="">In this callback we must:</p><ul id="a6bc25ab-345a-4f04-a48a-67b46280cd0b" class="bulleted-list"><li style="list-style-type:disc">Fetch the user from the database and provide them back to Passport by calling the <code>done</code> callback method, or…</li></ul><ul id="6e13ca6d-1953-43c7-8609-cf5edb233b72" class="bulleted-list"><li style="list-style-type:disc">If the user does not exist, we have a new user! We will add them to the database and pass along this new user in the <code>done</code> callback method.</li></ul><p id="01566ac0-b51f-46bc-b904-f3d5e8ac5729" class="">But wait, how can we tell what user to lookup?</p><p id="31c1a1fc-8021-4187-a416-fbed1c228a3c" class="">Looking at the callback’s signature:</p><pre id="a530ea97-048a-4cbc-a703-a02265ace991" class="code code-wrap"><code>function(accessToken, refreshToken, profile, done) {</code></pre><p id="47f59131-a492-4c43-be1d-f8ca9a35a236" class="">We can see that we are being provided the user’s <code>profile</code> - this object will contain the user’s <em>Google Id</em>. However, to find a user in our database by their <em>Google Id</em>, we’re going to need to add a field to our <code>User</code> model’s schema to hold it.</p><h3 id="25864848-5680-4c76-906e-93c889e9113f" class="">Step 7.3 - Modify the <code>User</code> Model</h3><p id="18210404-0458-4543-85ca-53a1e53df686" class="">Let’s add a property for <code>googleId</code> to our <code>userSchema</code> inside <code>models/user.js</code> file:</p><pre id="c46844ee-f8d1-4e43-abff-77c6cd9ef24a" class="code code-wrap"><code>const userSchema = new Schema({
+  email: String,
+  googleId: String,
+  studentProfile: {type: Schema.Types.ObjectId, ref: &quot;Student&quot;}
+}, {
+  timestamps: true
+})</code></pre><p id="fb6b826f-05fc-44a2-aad8-dd9af8647756" class="">Cool, now when we get a new user via OAuth, we can use the Google <code>profile</code> object’s info to create our new user!</p><h3 id="7aaf7234-1e90-4c2e-bf87-5ad83ab04918" class="">Step 7.4 - Callback Code</h3><p id="63c7e8f8-3a7e-43a5-821d-5a537ae3f73e" class="">Now we need to code the callback!</p><p id="543df105-c6e2-49fd-9510-8e801177b701" class="">We’re going to need access to our <code>User</code> model and our <code>Student</code> model:</p><pre id="50946891-d969-4a14-91cf-ddb1401cce44" class="code code-wrap"><code>import { Strategy as GoogleStrategy } from &#x27;passport-google-oauth20&#x27;
+// new code below
+import { User } from &#x27;../models/user.js&#x27;
+import { Student } from &#x27;../models/student.js&#x27;</code></pre><p id="d0dadee2-6ca5-4c0a-aba8-9009eec44708" class="">Cool, here comes the code for the entire <code>passport.use</code> method. We’ll review it once you have it in place.</p><pre id="af7e0583-b7c8-4485-b48d-0c6d899c0d82" class="code code-wrap"><code>passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK,
+    },
+    function (accessToken, refreshToken, profile, done) {
+      User.findOne({ googleId: profile.id }, function (err, user) {
+        if (err) return done(err)
+        if (user) {
+          return done(null, user)
+        } else {
+          // we have a new student via OAuth!
+          const newStudent = new Student({
+            name: profile.displayName,
+          })
+          // Build the user from 
+          const newUser = new User({
+            email: profile.emails[0].value,
+            googleId: profile.id,
+            studentProfile: newStudent._id
+          })
+          newStudent.save(function (err) {
+            if (err) return done(err)
+          })
+          newUser.save(function (err) {
+            if (err) {
+              // Something went wrong while making a user - delete the profile
+              // we just created to prevent orphan profiles.
+              Student.findByIdAndDelete(newStudent._id)
+              return done(err)
+            }
+            return done(null, newUser)
+          })
+        }
+      })
+    }
+  )
+)</code></pre><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="856a4d4a-8892-4372-919e-c3862193554c"><div style="font-size:1.5em"><span class="icon">⁉️</span></div><div style="width:100%"><code>done</code> is a common name for parameters that accept a callback function. You’ll see this again soon!</div></figure><h3 id="c86bb29c-ade6-4827-abb5-f532c4098a48" class="">Step 7.5 <code>serializeUser</code> &amp; <code>deserializeUser</code> Methods</h3><p id="4768789a-c5a9-4b7f-819c-51f0801d37cb" class="">With the <code>passport.use</code> method done, we now need to code two more methods inside of the <strong><mark class="highlight-orange"><code>config/passport</code></mark></strong> module.</p><p id="387bad06-0f7a-4e32-b058-dcdd5871e22f" class="">First, the callback method we just created is called when a user logs in, then the <code>passport.serializeUser</code> method is called to set up the session.</p><p id="ce245984-177b-419f-904c-d8e1e11d070d" class="">The <code>passport.deserializeUser</code> method is called every time a request comes in from an existing logged-in user - it is this method where we return what we want Passport to assign to the <code>req.user</code> object.</p><h3 id="bc3a0b3b-0648-4e50-8b58-13560a957f31" class="">Step 7.5.1 <code>serializeUser</code> Method</h3><p id="1aa6be6d-690c-4c0c-973e-768b9b57a529" class="">First up is the <code>passport.serializeUser</code> method that’s used to give Passport the nugget of data to put into the <em>session</em> for this authenticated user. Put this below the <code>passport.use</code> method:</p><pre id="861c57bf-679c-43cf-9eb9-052a08ab2644" class="code code-wrap"><code>passport.serializeUser(function (user, done) {
+  done(null, user.id)
+})</code></pre><p id="82db0f25-c83f-4245-808a-1e74e343ef22" class="">Passport gives us a full user object when the user logs in, and we give back just the student id to attach to the session.</p><p id="f47f1e51-a521-4700-b15f-f485a2c0fcc9" class="">To oversimplify a bit - <code>serializeUser</code> is getting the user logged in.</p><h3 id="41faf160-a68c-4b93-aa69-d4d3bfea5fc3" class="">Step 7.5.2 <code>deserializeUser</code> Method</h3><p id="9d6bece7-a210-49cf-9024-4e0873ccb59e" class="">The <code>passport.deserializeUser</code> method is used to provide Passport with the user from the db we want assigned to the <code>req.user</code> object. Put it below the <code>passport.serializeUser</code> method:</p><pre id="39ab19ed-6901-4c9d-86b6-0c0664700e84" class="code code-wrap"><code>passport.deserializeUser(function (id, done) {
+  User.findById(id)
+  .populate(&#x27;studentProfile&#x27;, &#x27;name avatar&#x27;)
+  .exec(function(err, user) {
+    done(err, user)
+  })
+})</code></pre><p id="3cccdd18-dd9b-40db-8000-d8c90e7220f5" class="">Passport gave us the <code>id</code> from the session, and we use it to fetch the student to assign to <code>req.user</code>.</p><p id="0d9daed8-0d98-48e7-8d9d-595bfb3c2076" class="">Let’s do another error check.</p><p id="09473400-071c-4f9d-93c6-bc066c418689" class="">To oversimply a bit again, <code>deserializeUser</code> is keeping the user logged in as they navigate around our site.</p><h2 id="bf654769-761e-47cd-bbee-54a8c27e3e3c" class="">Step 8 - Define Routes for Authentication</h2><p id="c20c8e73-f438-48c4-b9a1-db0ad76acf91" class="">We’re going to need three auth related routes:</p><ol type="1" id="2d851c18-d833-441d-a840-54bb0fb95ac3" class="numbered-list" start="1"><li>A route to handle the request sent when the user clicks Login with Google</li></ol><ol type="1" id="ff8a6e1b-076f-46aa-821c-5acb0576fa3b" class="numbered-list" start="2"><li>The <mark class="highlight-blue"><code>auth/google/oauth2callback</code></mark> route that we told Google to call after the user confirms or denies the OAuth login.</li></ol><ol type="1" id="fa096f0c-28d5-4225-aa09-ecbac391cffd" class="numbered-list" start="3"><li>Lastly, we will need a route for the user to logout.</li></ol><h3 id="aba145be-b390-4be4-8188-64cf1b46bd6e" class="">Step 8.1 Create <mark class="highlight-orange"><code>routes/auth.js</code></mark></h3><p id="90a7ef39-d047-4bcd-a13a-36ee7e443bf0" class="">We’re going to code these three new auth related routes in a new <mark class="highlight-orange"><code>routes/auth.js</code></mark> module which we need to create:</p><pre id="a0ca684b-2193-4f94-934c-770a91f15863" class="code code-wrap"><code>touch routes/auth.js</code></pre><h3 id="e21a1fe7-f705-4da4-9180-23da1e9b850e" class="">Step 8.1 Update <mark class="highlight-orange"><code>server.js</code></mark></h3><p id="06ba4b36-5ff1-43f6-926f-8e939e62341b" class="">Add this new code for the new <strong>auth</strong> route, and import the file we just created.</p><pre id="4fc5fcef-61cd-4f24-893d-4f647fb6df7b" class="code code-wrap"><code>import { router as studentsRouter } from &#x27;./routes/students.js&#x27;
+// A new route appears!
+import { router as authRouter } from &#x27;./routes/auth.js&#x27;</code></pre><p id="76455c9e-add0-4f7a-8883-31affc61af71" class="">and then use that new route:</p><pre id="841dd1bd-a641-451d-b26e-bf3764bbdc7a" class="code code-wrap"><code>app.use(&#x27;/students&#x27;, studentsRouter)
+// Using the new route!
+app.use(&#x27;/auth&#x27;, authRouter)</code></pre><h3 id="f5134761-fe7b-4d12-bce9-245b057cf306" class="">Step 8.2 Coding the Routes and Controllers</h3><p id="4337176d-762f-4403-b727-3850fa8a470f" class="">These new routes will need to access the express router module, and passport. Let&#x27;s import them in <code><mark class="highlight-orange"><strong>routes/auth.js</strong></mark></code>:</p><pre id="84c4b5b0-8bd8-438b-bfd3-83e798a50a71" class="code code-wrap"><code>import { Router } from &#x27;express&#x27;
+import passport from &#x27;passport&#x27;
+
+const router = Router()</code></pre><p id="081bdbfb-985c-4575-8f8a-5949550f11e1" class="">Don&#x27;t forget to export the router!</p><pre id="f67c35ff-546f-430b-8781-0f809001f8e1" class="code code-wrap"><code>export {
+  router
+}</code></pre><h3 id="c2938cf6-c779-4e35-9286-f20b16188c63" class="">Step 8.3 Login Route</h3><p id="35d83143-237f-44e8-af2c-588ae4acda18" class="">In <code><mark class="highlight-orange"><strong>routes/auth.js</strong></mark></code>, let’s add the login route and point it to <code>authCtrl.googleOAuth</code>:</p><pre id="d2cb25f9-47e5-4df0-b88f-d953413424c9" class="code code-wrap"><code>// Google OAuth login route
+router.get(
+  &#x27;/google&#x27;, 
+  passport.authenticate(&#x27;google&#x27;, { scope: [&#x27;profile&#x27;, &#x27;email&#x27;] })
+)</code></pre><p id="b5aec138-0f63-4c31-aa04-6d47db209f25" class="">The <code>passport.authenticate</code> function will return a middleware function that does the coordinating with Google’s OAuth server.</p><p id="b0ca74b4-949e-4f4d-b94d-f956d66585a5" class="">The user will be presented with the consent screen if they have not previously consented.</p><p id="9c88ec81-30f0-4cfb-973d-8801d6954b37" class="">Note that we are specifying that we want Passport to use the <code>google</code> strategy. Remember, we could have more than one strategy in use.</p><p id="e828ab35-d4ce-4931-98c9-afd13d99810d" class="">We are also specifying the <em>scope</em> that we want access to, in this case, <code>[&#x27;profile&#x27;, &#x27;email&#x27;]</code>.</p><h3 id="b86148a2-933e-43b0-921a-61ddedddb511" class="">Step 8.4 Google Callback Route</h3><p id="ba71c7c2-26d6-4f41-b5a4-ef81774416f4" class="">Below our login route we just added, let’s add the callback route that Google will call after the user confirms their login with Google:</p><pre id="320b90e6-7fb3-47be-b0da-166dc0d660c5" class="code code-wrap"><code>// Google OAuth callback route
+router.get(
+  &#x27;/google/oauth2callback&#x27;, 
+  passport.authenticate(&#x27;google&#x27;, {
+    successRedirect: &#x27;/students&#x27;,
+    failureRedirect: &#x27;/students&#x27;,
+  })
+)</code></pre><p id="dcc03cef-21d1-4ce4-80e0-23967ec0018e" class="">Note that we can specify the redirects for a successful and unsuccessful login. For this app, we will redirect to our main <code>/students</code> route in both cases.</p><h3 id="2988408d-ff50-41b7-8b73-39f0e362c78b" class="">Step 8.5 Logout Route</h3><p id="05ec0902-3918-4165-89cc-478b004b3bbc" class="">The last route to add is the route that will logout our user:</p><pre id="66ea78bf-77e4-4a19-9f38-1a94d832bcad" class="code code-wrap"><code>// OAuth logout route
+router.get(&#x27;/logout&#x27;, function(req, res) {
+  req.logout()
+  res.redirect(&#x27;/students&#x27;)
+})</code></pre><p id="880170e5-8cd6-4a36-bee0-8776e88b1911" class="">Note that the <code>logout()</code> method was automatically added to the <code>req</code> object by Passport!</p><h2 id="b811fe8b-10b9-4867-894e-abee78a8c795" class="">Step 9 - Add Login/Logout UI</h2><p id="2c232e93-3aa3-4354-b609-d281f05a37e9" class="">We want the nav bar in <mark class="highlight-orange"><code><strong>students/index.ejs</strong></code></mark> to update dynamically depending upon whether there’s an authenticated user or not:</p><figure id="bb0f0486-eb4d-450b-b5e5-0cfe8ec226a3" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Untitled%201.png"><img style="width:816px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Untitled%201.png"/></a></figure><p id="9fc48f13-d536-4035-992a-d9aac7cc2877" class=""><strong>vs</strong></p><figure id="af310381-29ef-448b-8f5c-f4c97e1aeaeb" class="image"><a href="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Untitled%202.png"><img style="width:816px" src="Google%20OAuth%20with%20Express%20&amp;%20Passport%207d20de7d28b345a18832f9416b632860/Untitled%202.png"/></a></figure><h3 id="e9aa84c2-0c88-43ef-8fdf-c3c2fb25e747" class="">Step 9.1 Pass <code>req.user</code> to the View</h3><p id="c76d11c3-171b-4e0a-95fe-dd2571dec71a" class="">Let’s update the <code>index</code> action in <code><mark class="highlight-orange"><strong>controllers/students.js</strong></mark></code> to pass in <code>req.user</code> :</p><pre id="47b83a54-fb9c-4945-8493-f57a4d37c579" class="code code-wrap"><code>function index(req, res, next) {
+  ...
+    res.render(&#x27;students/index&#x27;, {
+      students: students,
+      name: req.query.name,
+      user: req.user
+    })
+  })
+}</code></pre><p id="1dbb4306-ea75-481c-802c-d8794f0c0a4c" class="">Now the logged-in student is in a <code>user</code> variable that’s available inside of <code><mark class="highlight-orange"><strong>students/index.ejs</strong></mark></code>.</p><p id="f7e8e100-fac2-4c67-888d-fbabfa601cf7" class="">If nobody is logged in, <code>user</code> will be <code>undefined</code>.</p><h3 id="bf12d9b3-52f8-474d-985d-3111ec543066" class="">Step 9.2 Add the Login / Logout UI Logic</h3><p id="aa5bebc4-cc69-4563-bd78-a7d7e0bb870e" class="">We’re going to need a link for the user to click to login/out. Let’s modify <code><mark class="highlight-orange"><strong>students/index.ejs</strong></mark></code> as follows:</p><pre id="9fb19e1f-9642-432d-9116-ca21d029e50e" class="code code-wrap"><code>					&lt;div class=&quot;text-end d-flex align-items-center&quot;&gt;
+          &lt;% // TODO: Add login logic here %&gt; 
+          &lt;% if (user) { %&gt;
+            &lt;a href=&quot;/auth/logout&quot;&gt;
+              &lt;button type=&quot;submit&quot; class=&quot;btn btn-warning&quot;&gt;Logout&lt;/button&gt;
+            &lt;/a&gt;
+          &lt;% } else { %&gt;
+            &lt;a href=&quot;/auth/google&quot;&gt;
+              &lt;button type=&quot;submit&quot; class=&quot;siwg&quot;&gt;
+                &lt;img id=&quot;siwg-image&quot; src=&quot;&quot; alt=&quot;Sign in with Google&quot; /&gt;
+              &lt;/button&gt;
+            &lt;/a&gt;
+          &lt;% } %&gt;
+          &lt;/div&gt;</code></pre><h3 id="83cbd9b5-84ec-458b-9f68-cf11585d775f" class="">Step 9.3 Try Logging In!</h3><p id="fd4d4dcc-3366-4b7a-aa93-e2020088176c" class="">We’ve finally got to the point where you can test out our app’s authentication!</p><h3 id="12c02120-22f4-43a0-8449-b9567c00988d" class="">Step 9.4 - Verifying Session Middleware</h3><p id="fad585c1-e729-483e-8222-dc77a074834d" class="">Remember earlier we installed the Session middleware? Now that we&#x27;ve logged in we can finally verify that it worked!</p><p id="89984f8e-c2f7-4c09-90c0-97840cde1789" class="">Make sure your server is running with <code>nodemon</code>.</p><p id="7c1a6bf5-040a-4cc4-8b47-6877b8ed24d8" class="">Browse to the app at <a href="https://localhost:3000"><mark class="highlight-blue"><code>https://localhost:3000</code></mark></a>.</p><p id="b61a866b-e933-400b-80f2-b17382db4b15" class="">In <em>Chrome</em> - Open your DevTools and click the <mark class="highlight-red">Application</mark> tab, then expand <mark class="highlight-red">Cookies</mark> in the menu on the left and click <a href="https://localhost:3000"><mark class="highlight-blue"><code>https://localhost:3000</code></mark></a>.</p><p id="82c268f0-df54-4823-a930-cdce17bda922" class="">In <em>Firefox</em> - Open your DevTools and click the <mark class="highlight-red">Storage </mark>tab, then expand <mark class="highlight-red">Cookies</mark> in the menu on the left and click <a href="https://localhost:3000"><mark class="highlight-blue"><code>https://localhost:3000</code></mark></a>.</p><p id="90591ec2-1b20-485b-9221-ae632755e263" class="">A cookie named <code>connect.sid</code> confirms that the session middleware is doing its job.</p><h2 id="7feeed62-9ceb-49af-8fe9-ca5bb7cb17fb" class="">Step 10 - Code the First User Story</h2><p id="f6e3d05e-4f50-412c-8da1-123421e0a6ac" class="">Our first user story reads:
+<em>AAU: I want to add fun facts about myself so that I can amuse others.</em></p><p id="e13a99eb-b7d4-47c0-b190-c0e8cbb73a7a" class="">We’re going to need a <code>&lt;form&gt;</code> with an <code>&lt;input&gt;</code> for the fact’s text and a submit <code>&lt;button&gt;</code>.</p><p id="34c1cb97-69fb-4d56-a622-3a6b29d31f83" class="">However, we <strong>only</strong> want this UI to show within the logged-in student’s card.</p><h3 id="40537503-b759-496f-ac2c-c5124f25140c" class="">Step 10.1 Add Dynamic UI</h3><p id="6e85c71d-3ad3-472e-9bbb-21c3533ed67a" class="">Let’s add some dynamic UI to add a fact. Ensure it’s added in the correct location!</p><pre id="523e855d-9dba-4cb5-be4f-e17c73b86f21" class="code code-wrap"><code>							&lt;% student.facts.forEach(function(fact) { %&gt;
+                  &lt;li class=&quot;card-text&quot;&gt;&lt;%= fact.text %&gt;&lt;/li&gt;
+                &lt;% }) %&gt;
+              &lt;/ul&gt;
+              &lt;% // Add dynamic UI form below this line %&gt; 
+              &lt;% if (student._id.equals(user?.studentProfile._id)) { %&gt;
+                &lt;div class=&quot;card-footer&quot;&gt;
+                  &lt;form
+                    action=&quot;/students/facts&quot;
+                    method=&quot;POST&quot;
+                    class=&quot;input-group&quot;
+                  &gt;
+                    &lt;input
+                      type=&quot;text&quot;
+                      name=&quot;text&quot;
+                      class=&quot;form-control form-control-dark&quot;
+                      placeholder=&quot;Add a fact...&quot;
+                      autocomplete=&quot;off&quot;
+											required
+                    /&gt;
+                    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;
+                      Add Fact
+                    &lt;/button&gt;
+                  &lt;/form&gt;
+                &lt;/div&gt;
+              &lt;% } %&gt;</code></pre><p id="79b5304c-b368-4e2e-a0aa-bd60754b3285" class="">Note how the <code>equals</code> method is being used to compare the <code>_id</code>s - this is necessary because they are objects.</p><p id="c5a51535-b2f6-4145-a6d5-9e1ff7289f24" class="">Also, the <code>(user?._id)</code> prevents an error when there’s no <code>user</code> logged in using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining"><mark class="highlight-blue"><strong>optional chaining operator</strong></mark></a>.</p><figure id="c344e523-5226-4596-acb2-e19e9c737997"><div class="source"><a href="https://twitter.com/wesbos/status/1345080914276208643?s=20">https://twitter.com/wesbos/status/1345080914276208643?s=20</a></div></figure><h3 id="c6fa7fb2-f3e6-4a4d-8f4c-fa382f5e5429" class="">Step 10.2 Controller Code</h3><p id="b4414ebc-e63f-409e-8e0c-875613a6f27d" class="">Lastly, let’s code the <code>addFact</code> and  action in the <code><strong><mark class="highlight-orange">controllers/students.js</mark></strong></code> controller:</p><pre id="2de97180-7750-41a0-b3ac-7b5b312ed404" class="code code-wrap"><code>function addFact(req, res, next) {
+  Student.findById(req.user.studentProfile._id, function(err, student){
+    student.facts.push(req.body)
+    student.save(function (err){
+      res.redirect(&#x27;/students&#x27;)
+    })
+  })
+}</code></pre><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="81beeccc-a8c8-4cf3-9445-07615286f61b"><div style="font-size:1.5em"><span class="icon">🧠</span></div><div style="width:100%">Remember: <code>req.user</code> is the logged-in user’s Mongoose document!</div></figure><h3 id="cb978b64-cd73-4be9-907e-4e97687e482e" class="">Step 10.3 Test the First User Story</h3><p id="818cf4d6-9573-474d-ba7d-95b6f2b3a204" class="">That should take care of our first user story - try it out!</p><p id="c1792a45-3669-4d2b-afde-ecaf7b954360" class="">Yes, the UX is not that great because of the full-page refresh, but we’ll address that when we develop single-page apps with React.</p><p id="7a75734f-a086-4e93-80dd-1953ab5df3b1" class="">Cool, just one step left!</p><h2 id="ccff6a19-7cc0-45d2-8b47-c9ab426b159f" class="">Step 11 - Authorization</h2><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="8d118f44-3aec-4417-8434-0ef4692d1e20"><div style="font-size:1.5em"><span class="icon">❓</span></div><div style="width:100%"><strong>What is </strong><em><strong>authorization</strong></em><strong>?</strong></div></figure><p id="346fc4bc-ae64-465e-8c9a-8c1bc8168517" class="">We will need to ensure that certain routes/functionality can only be accessed if there’s a logged in user.</p><p id="38cc1d06-3ef5-463e-a808-e00efcaf608f" class="">Passport adds a nice method to the <code>req</code> object, <code>req.isAuthenticated()</code> that returns <code>true</code> or <code>false</code> depending upon whether there’s a logged-in user or not.</p><p id="1d7cfb5b-2395-42f3-8ede-1f7aa790a25c" class="">We’re going to write our own little middleware function to take advantage of <code>req.isAuthenticated()</code> to perform some authorization.</p><h3 id="5bbf2add-4930-44ba-8362-f163b8a19029" class="">Step 11.1 Authorization Middleware</h3><p id="d2950edf-06ca-4fc2-b9a6-f5e16f6ff319" class="">As we know by now, Express’s middleware and routing are extremely flexible and powerful.</p><p id="57f08851-d68f-439d-8b41-80c26d9d3584" class="">We can add multiple middleware functions before a route’s final middleware function!</p><p id="f9e5bbcc-73b9-4710-94c4-f20df57552c2" class="">Let’s modify <strong><mark class="highlight-orange"><code>routes/students.js</code></mark></strong> to see this in action:</p><pre id="b0bde993-711c-4420-97de-716cf2485b2a" class="code code-wrap"><code>router.post(&#x27;/facts&#x27;, isLoggedIn, studentsCtrl.addFact)</code></pre><p id="7092d5eb-669e-4c5d-91ed-eb894af6466d" class="">Note the inserted <code>isLoggedIn</code> middleware function!</p><p id="c0b80fed-13f3-4d48-b8e8-f6774d9c65bc" class="">If the <code>isLoggedIn</code> middleware calls <code>next()</code>, then the next middleware, <code>studentsCtrl.addFact</code> will be called.</p><h3 id="701aa01a-7945-4894-81d2-e46e8479e89a" class="">Step 11.2 Authorization Middleware</h3><p id="a1530a00-9049-4d1c-8b97-dae969d656e9" class="">Our custom <code>isLoggedIn</code> middleware function, like all middleware, will either call <code>next()</code>, or respond to the request.</p><p id="c1c7578c-edd2-4b12-94dd-a6da69ff9779" class="">Let’s put our new middleware at the very bottom of <mark class="highlight-orange"><strong><code>routes/students.js</code></strong></mark> - just above the <code>module.exports</code>:</p><pre id="c83fc7ff-9dcf-4941-a6be-c070059d3ea9" class="code code-wrap"><code>// Insert this middleware for routes that require a logged in user
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) return next()
+  res.redirect(&#x27;/auth/google&#x27;)
+}</code></pre><p id="a8d9101f-260b-435f-ac51-1b4b8ccccdc6" class="">That’s all there is to it!</p><h2 id="f6846aa0-ca7d-41b8-a565-5ce2ccb31e3c" class="">Congrats on implementing OAuth authentication and authorization!</h2><h1 id="5d910299-78e9-40e2-8614-dc6a0271427c" class="">Level Up 🚀</h1><p id="67377c80-73c0-4e2a-9fc5-db2adfb952e1" class="">Now you’re ready to start your project by implementing OAuth authentication!</p><p id="5b5abe7e-65ab-460f-8f74-c7fe1b525b1a" class="">For some challenging practice, complete these remaining <em>user stories</em>:</p><ul id="c13c0024-9e57-483f-9bce-a64ec7049595" class="bulleted-list"><li style="list-style-type:disc">I want to see the users’ Google avatar instead of the current icon.</li></ul><ul id="240f1820-d408-4548-bd7a-b7ca67e1058d" class="bulleted-list"><li style="list-style-type:disc">I want to be able to delete facts.</li></ul><h1 id="e90a38d6-5c8d-4f25-87e6-9fa345465aff" class="">References 📖</h1><ul id="0405c576-98f6-486c-94ab-1d7edd6e1cb0" class="bulleted-list"><li style="list-style-type:disc"><strong><mark class="highlight-blue"><a href="https://developers.google.com/identity/protocols/OAuth2">Google OAuth2</a></mark></strong><figure id="248f2644-d8a8-44bc-8b61-72b69971cdc6"><a href="https://developers.google.com/identity/protocols/oauth2" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">Using OAuth 2.0 to Access Google APIs | Google Identity</div></div><div class="bookmark-href"><img src="https://www.gstatic.com/devrel-devsite/prod/v5f61782021051fb502364887a46a1c5ce2cd6f3d29a3549e907afe67612e9bba/developers/images/favicon.png" class="icon bookmark-icon"/>https://developers.google.com/identity/protocols/oauth2</div></div><img src="https://www.gstatic.com/devrel-devsite/prod/v5f61782021051fb502364887a46a1c5ce2cd6f3d29a3549e907afe67612e9bba/developers/images/opengraph/teal.png" class="bookmark-image"/></a></figure></li></ul><ul id="df79fcac-4720-4c84-9aae-f3d56db4eb3e" class="bulleted-list"><li style="list-style-type:disc"><strong><mark class="highlight-blue"><a href="http://mongoosejs.com/">Mongoose</a></mark></strong><figure id="bc3857bd-bc3f-43ce-8f98-29cf44e90494"><a href="https://mongoosejs.com/" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">Mongoose</div><div class="bookmark-description">Let&#x27;s face it, writing MongoDB validation, casting and business logic boilerplate is a drag. That&#x27;s why we wrote Mongoose. Mongoose provides a straight-forward, schema-based solution to model your application data. It includes built-in type casting, validation, query building, business logic hooks and more, out of the box.</div></div><div class="bookmark-href"><img src="https://mongoosejs.com/docs/images/favicon/favicon-16x16.png" class="icon bookmark-icon"/>https://mongoosejs.com/</div></div><img src="https://pbs.twimg.com/profile_images/750300526538027008/jo7cFmU9_400x400.jpg" class="bookmark-image"/></a></figure></li></ul><ul id="a2efdf2c-98ee-4975-859c-095bf15a4b2a" class="bulleted-list"><li style="list-style-type:disc">Bootstrap:<figure id="28518a09-9a4c-47b1-8c66-72f94c2a56dd"><a href="https://getbootstrap.com/" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">Bootstrap</div><div class="bookmark-description">Quickly design and customize responsive mobile-first sites with Bootstrap, the world&#x27;s most popular front-end open source toolkit, featuring Sass variables and mixins, responsive grid system, extensive prebuilt components, and powerful JavaScript plugins.</div></div><div class="bookmark-href"><img src="https://getbootstrap.com/docs/5.0/assets/img/favicons/favicon.ico" class="icon bookmark-icon"/>https://getbootstrap.com/</div></div><img src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-social.png" class="bookmark-image"/></a></figure><p id="6d50b678-4939-4e6e-9472-fe9b8253e33d" class="">
+</p></li></ul></div></article></body></html>
